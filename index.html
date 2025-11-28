@@ -1,0 +1,3828 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TaskBubbles Pro V2</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --primary: #667eea;
+      --primary-light: #8a9ef5;
+      --primary-dark: #5a67d8;
+      --secondary: #764ba2;
+      --success: #10b981;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+      --text-dark: #1f2937;
+      --text-light: #6b7280;
+      --bg-light: #f9fafb;
+      --bg-card: #ffffff;
+      --border: #e5e7eb;
+      --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+      --shadow-hover: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+      --transition: all 0.2s ease;
+      --border-radius: 12px;
+    }
+
+    body.dark-mode {
+      --primary: #8b5cf6;
+      --primary-light: #a78bfa;
+      --primary-dark: #7c3aed;
+      --secondary: #7e22ce;
+      --success: #10b981;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+      --text-dark: #f9fafb;
+      --text-light: #d1d5db;
+      --bg-light: #111827;
+      --bg-card: #1f2937;
+      --border: #374151;
+      --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.2);
+      --shadow-hover: 0 10px 15px -3px rgba(0, 0, 0, 0.4), 0 4px 6px -2px rgba(0, 0, 0, 0.3);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      overflow: hidden;
+      color: var(--text-dark);
+      background: var(--bg-light);
+      transition: var(--transition);
+      line-height: 1.5;
+    }
+
+    /* Pantalla de login */
+    #loginScreen {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: var(--bg-light);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+      transition: opacity 0.5s ease;
+    }
+
+    .login-container {
+      background: var(--bg-card);
+      padding: 40px;
+      border-radius: var(--border-radius);
+      box-shadow: var(--shadow-hover);
+      width: 90%;
+      max-width: 400px;
+      text-align: center;
+      border: 1px solid var(--border);
+    }
+
+    .login-container h2 {
+      margin-bottom: 25px;
+      color: var(--primary);
+      font-size: 24px;
+      font-weight: 600;
+    }
+
+    .login-container input {
+      display: block;
+      margin: 12px auto;
+      padding: 12px 16px;
+      width: 100%;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      font-family: 'Poppins', sans-serif;
+      transition: var(--transition);
+      background: var(--bg-card);
+      color: var(--text-dark);
+    }
+
+    .login-container input:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+
+    .login-container button {
+      margin: 10px 8px;
+      padding: 10px 20px;
+      border-radius: 8px;
+      cursor: pointer;
+      background: var(--primary);
+      color: white;
+      border: none;
+      font-family: 'Poppins', sans-serif;
+      font-weight: 500;
+      transition: var(--transition);
+    }
+
+    .login-container button:hover {
+      background: var(--primary-dark);
+      transform: translateY(-1px);
+    }
+
+    .app-info {
+      margin-top: 20px;
+      color: var(--text-light);
+      font-size: 14px;
+    }
+
+    /* Aplicación principal */
+    #app {
+      display: none;
+    }
+
+    #sky {
+      position: relative;
+      width: 100%;
+      height: 100vh;
+      overflow: hidden;
+      transition: background 1s ease;
+      background: var(--bg-light);
+    }
+
+    body.dark-mode #sky {
+      background: var(--bg-light);
+    }
+
+    #bubble-container {
+      position: absolute;
+      top: 100px;
+      left: 0;
+      right: 0;
+      bottom: 100px;
+      margin: 0 auto;
+      width: calc(100% - 40px);
+      z-index: 1;
+    }
+
+    /* ===========================================
+     ESTILOS DE LAS BURBUJAS - VERSIÓN MINIMALISTA
+     =========================================== */
+
+    .bubble {
+      position: absolute;
+      width: 170px;
+      height: 170px;
+      color: var(--text-dark);
+      font-weight: 500;
+      text-align: center;
+      cursor: grab;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      user-select: none;
+      border-radius: 50%;
+      box-shadow: var(--shadow);
+      transition: var(--transition);
+      z-index: 5;
+      padding: 15px;
+      border: none;
+      background: var(--bg-card);
+      backdrop-filter: blur(10px);
+      overflow: visible;
+      outline: none !important;
+    }
+
+    .bubble:hover {
+      transform: scale(1.05);
+      box-shadow: var(--shadow-hover);
+    }
+
+    /* Estilos por prioridad - versión minimalista */
+    .bubble.priority-1 {
+      border: 3px solid var(--success);
+    }
+
+    .bubble.priority-2 {
+      border: 3px solid var(--warning);
+    }
+
+    .bubble.priority-3 {
+      border: 3px solid var(--danger);
+    }
+
+    .bubble.completed {
+      opacity: 0.6;
+      transform: scale(0.9);
+      border-color: var(--success);
+    }
+
+    .bubble.time-warning {
+      animation: pulse-warning 2s infinite;
+      border-color: var(--warning);
+    }
+
+    .bubble.time-critical {
+      animation: pulse-critical 1s infinite;
+      border-color: var(--danger);
+    }
+
+    .bubble.expired {
+      border-color: var(--danger) !important;
+      animation: shake 0.5s infinite alternate;
+    }
+
+    @keyframes pulse-warning {
+      0%, 100% {
+        box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.4);
+      }
+      50% {
+        box-shadow: 0 0 0 10px rgba(245, 158, 11, 0);
+      }
+    }
+
+    @keyframes pulse-critical {
+      0%, 100% {
+        box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4);
+      }
+      50% {
+        box-shadow: 0 0 0 10px rgba(239, 68, 68, 0);
+      }
+    }
+
+    @keyframes shake {
+      0% {
+        transform: translateX(-2px) rotate(-1deg);
+      }
+      100% {
+        transform: translateX(2px) rotate(1deg);
+      }
+    }
+
+    /* Contenido interno de las burbujas */
+    .bubble-content {
+      background: transparent !important;
+      border-radius: 12px;
+      padding: 10px;
+      margin-bottom: 8px;
+      width: 92%;
+      color: var(--text-dark);
+      position: relative;
+      z-index: 2;
+    }
+
+    .bubble-title {
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 4px;
+      color: var(--primary);
+    }
+
+    .bubble-detail {
+      font-size: 11px;
+      margin: 2px 0;
+      color: var(--text-dark);
+    }
+
+    .bubble-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+      margin-top: 5px;
+      justify-content: center;
+    }
+
+    .bubble-tag {
+      font-size: 9px;
+      padding: 2px 6px;
+      border-radius: 8px;
+      background: rgba(102, 126, 234, 0.1);
+      color: var(--primary);
+      font-weight: 500;
+    }
+
+    .bubble-deadline {
+      font-size: 10px;
+      font-weight: 600;
+      margin-top: 4px;
+      padding: 3px 8px;
+      border-radius: 8px;
+      background: rgba(102, 126, 234, 0.1);
+      color: var(--primary);
+    }
+
+    .bubble-deadline.warning {
+      background: rgba(245, 158, 11, 0.1);
+      color: var(--warning);
+    }
+
+    .bubble-deadline.critical {
+      background: rgba(239, 68, 68, 0.1);
+      color: var(--danger);
+    }
+
+    .bubble-deadline.expired {
+      background: var(--danger);
+      color: white;
+    }
+
+    .bubble-progress {
+      width: 100%;
+      height: 4px;
+      background: rgba(0, 0, 0, 0.1);
+      border-radius: 2px;
+      margin-top: 4px;
+      overflow: hidden;
+    }
+
+    .bubble-progress-bar {
+      height: 100%;
+      background: var(--success);
+      transition: width 0.3s ease;
+    }
+
+    /* Barra superior */
+    #topBar {
+      position: fixed;
+      top: 0;
+      width: 100%;
+      height: 70px;
+      background: var(--bg-card);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      z-index: 20;
+      padding: 0 25px;
+      box-shadow: var(--shadow);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .app-header {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    .app-logo {
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--primary);
+    }
+
+    .app-slogan {
+      font-size: 12px;
+      color: var(--text-light);
+    }
+
+    .date-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      background: var(--primary);
+      color: white;
+      padding: 8px 16px;
+      border-radius: 8px;
+    }
+
+    .date-day {
+      font-size: 12px;
+      font-weight: 500;
+    }
+
+    .date-full {
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    #levelIndicator {
+      background: var(--primary);
+      color: white;
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 500;
+      margin-right: 15px;
+    }
+
+    #levelControls {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+
+    #levelControls button,
+    .theme-toggle {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      cursor: pointer;
+      border: none;
+      background: var(--primary);
+      color: white;
+      box-shadow: var(--shadow);
+      transition: var(--transition);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+    }
+
+    #levelControls button:hover,
+    .theme-toggle:hover {
+      background: var(--primary-dark);
+      transform: translateY(-2px);
+    }
+
+    #authControls {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+
+    #authControls button {
+      padding: 8px 16px;
+      border-radius: 20px;
+      cursor: pointer;
+      background: var(--primary);
+      border: none;
+      color: white;
+      font-family: 'Poppins', sans-serif;
+      font-weight: 500;
+      transition: var(--transition);
+    }
+
+    #authControls button:hover {
+      background: var(--primary-dark);
+      transform: translateY(-2px);
+    }
+
+    /* Menu desplegable */
+    .dropdown {
+      position: relative;
+      display: inline-block;
+    }
+
+    .dropdown-content {
+      display: none;
+      position: absolute;
+      bottom: 100%;
+      left: 0;
+      background: var(--bg-card);
+      min-width: 200px;
+      box-shadow: var(--shadow-hover);
+      border-radius: var(--border-radius);
+      z-index: 100;
+      padding: 10px;
+      margin-bottom: 10px;
+      border: 1px solid var(--border);
+    }
+
+    .dropdown-content.show {
+      display: block;
+    }
+
+    .dropdown-content button {
+      display: block;
+      width: 100%;
+      padding: 10px 12px;
+      margin: 5px 0;
+      text-align: left;
+      background: none;
+      border: none;
+      color: var(--text-dark);
+      border-radius: 6px;
+      cursor: pointer;
+      transition: var(--transition);
+      font-family: 'Poppins', sans-serif;
+    }
+
+    .dropdown-content button:hover {
+      background: rgba(102, 126, 234, 0.1);
+    }
+
+    /* Modales */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 100;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(5px);
+    }
+
+    .modal-content {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: var(--bg-card);
+      padding: 30px;
+      border-radius: var(--border-radius);
+      box-shadow: var(--shadow-hover);
+      width: 90%;
+      max-width: 500px;
+      text-align: center;
+      border: 1px solid var(--border);
+      max-height: 85vh;
+      overflow-y: auto;
+    }
+
+    .modal-content h3 {
+      margin-bottom: 20px;
+      color: var(--primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      gap: 10px;
+    }
+
+    .modal-content input,
+    .modal-content select,
+    .modal-content textarea {
+      display: block;
+      margin: 10px auto;
+      padding: 12px 16px;
+      width: 100%;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      font-family: 'Poppins', sans-serif;
+      transition: var(--transition);
+      background: var(--bg-card);
+      color: var(--text-dark);
+    }
+
+    .modal-content textarea {
+      min-height: 80px;
+      resize: vertical;
+    }
+
+    .modal-content input:focus,
+    .modal-content select:focus,
+    .modal-content textarea:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+
+    .modal-content button {
+      margin: 8px 6px;
+      padding: 10px 20px;
+      border-radius: 8px;
+      cursor: pointer;
+      background: var(--primary);
+      color: white;
+      border: none;
+      font-family: 'Poppins', sans-serif;
+      font-weight: 500;
+      transition: var(--transition);
+    }
+
+    .modal-content button:hover {
+      background: var(--primary-dark);
+      transform: translateY(-2px);
+    }
+
+    .modal-close {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      background: var(--danger);
+      border: none;
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      cursor: pointer;
+      color: white;
+      font-size: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: var(--transition);
+    }
+
+    .modal-close:hover {
+      transform: rotate(90deg);
+    }
+
+    /* Panel de controles */
+    #controlsPanel {
+      position: fixed;
+      bottom: 20px;
+      left: 20px;
+      background: var(--bg-card);
+      padding: 20px;
+      border-radius: var(--border-radius);
+      z-index: 10;
+      box-shadow: var(--shadow);
+      width: 300px;
+      border: 1px solid var(--border);
+      max-height: 85vh;
+      overflow-y: auto;
+    }
+
+    #controlsPanel h3 {
+      margin-bottom: 15px;
+      color: var(--primary);
+      font-size: 16px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    #controlsPanel input,
+    #controlsPanel select,
+    #controlsPanel button,
+    #controlsPanel textarea {
+      margin: 8px 0;
+      padding: 10px 12px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      width: 100%;
+      font-family: 'Poppins', sans-serif;
+      transition: var(--transition);
+      background: var(--bg-card);
+      color: var(--text-dark);
+      font-size: 14px;
+    }
+
+    #controlsPanel textarea {
+      min-height: 60px;
+      resize: vertical;
+    }
+
+    #controlsPanel input:focus,
+    #controlsPanel select:focus,
+    #controlsPanel textarea:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+
+    #controlsPanel button {
+      background: var(--primary);
+      color: white;
+      border: none;
+      cursor: pointer;
+      font-weight: 500;
+    }
+
+    #controlsPanel button:hover {
+      background: var(--primary-dark);
+      transform: translateY(-2px);
+    }
+
+    .tags-input-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      padding: 8px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      min-height: 40px;
+      background: var(--bg-card);
+      margin: 8px 0;
+    }
+
+    .tag-item {
+      background: var(--primary);
+      color: white;
+      padding: 4px 8px;
+      border-radius: 12px;
+      font-size: 11px;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .tag-item button {
+      background: none;
+      border: none;
+      color: white;
+      cursor: pointer;
+      padding: 0;
+      width: auto;
+      height: auto;
+      margin: 0;
+      font-size: 12px;
+    }
+
+    /* Botón principal para abrir el panel de tareas */
+    .main-action-btn {
+      position: fixed;
+      bottom: 20px;
+      left: 20px;
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background: var(--primary);
+      color: white;
+      border: none;
+      box-shadow: var(--shadow-hover);
+      cursor: pointer;
+      z-index: 15;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      transition: var(--transition);
+    }
+
+    .main-action-btn:hover {
+      background: var(--primary-dark);
+      transform: scale(1.1);
+    }
+
+    /* Panel de estadísticas */
+    #statsPanel {
+      position: fixed;
+      top: 80px;
+      right: 20px;
+      background: var(--bg-card);
+      padding: 20px;
+      border-radius: var(--border-radius);
+      z-index: 10;
+      box-shadow: var(--shadow);
+      width: 220px;
+      border: 1px solid var(--border);
+    }
+
+    .stat-item {
+      display: flex;
+      justify-content: space-between;
+      margin: 10px 0;
+      padding: 8px 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .stat-value {
+      font-weight: 600;
+      color: var(--primary);
+    }
+
+    .completeBtn {
+      margin-top: 8px;
+      padding: 6px 12px;
+      border: none;
+      border-radius: 15px;
+      background: var(--success);
+      color: white;
+      font-size: 11px;
+      cursor: pointer;
+      transition: var(--transition);
+      font-weight: 500;
+      position: relative;
+      z-index: 2;
+    }
+
+    .completeBtn:hover {
+      background: #0da271;
+      transform: translateY(-2px);
+    }
+
+    .deleteBtn {
+      position: absolute;
+      top: -10px;
+      right: -10px;
+      background: var(--danger);
+      color: white;
+      border-radius: 50%;
+      width: 28px;
+      height: 28px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 12px;
+      cursor: pointer;
+      transition: var(--transition);
+      box-shadow: var(--shadow);
+      border: 2px solid var(--bg-card);
+      z-index: 3;
+    }
+
+    .deleteBtn:hover {
+      transform: scale(1.15) rotate(90deg);
+    }
+
+    .viewBtn {
+      position: absolute;
+      top: -10px;
+      left: -10px;
+      background: var(--primary);
+      color: white;
+      border-radius: 50%;
+      width: 28px;
+      height: 28px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 12px;
+      cursor: pointer;
+      transition: var(--transition);
+      box-shadow: var(--shadow);
+      border: 2px solid var(--bg-card);
+      z-index: 3;
+    }
+
+    .viewBtn:hover {
+      transform: scale(1.15);
+    }
+
+    .action-btn {
+      margin-top: 10px;
+      padding: 8px 12px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 500;
+      transition: var(--transition);
+      width: 100%;
+      font-size: 13px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .action-btn.primary {
+      background: var(--primary);
+      color: white;
+    }
+
+    .action-btn.success {
+      background: var(--success);
+      color: white;
+    }
+
+    .action-btn.warning {
+      background: var(--warning);
+      color: white;
+    }
+
+    .action-btn.danger {
+      background: var(--danger);
+      color: white;
+    }
+
+    .action-btn:hover {
+      transform: translateY(-2px);
+    }
+
+    .history-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px;
+      margin: 8px 0;
+      background: rgba(102, 126, 234, 0.05);
+      border-radius: 8px;
+      border-left: 4px solid var(--primary);
+    }
+
+    .history-info {
+      flex: 1;
+      text-align: left;
+    }
+
+    .history-date {
+      font-size: 12px;
+      color: var(--text-light);
+    }
+
+    .filter-controls {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .filter-controls select {
+      flex: 1;
+      margin: 0;
+    }
+
+    /* Confetti */
+    .confetti {
+      position: fixed;
+      width: 10px;
+      height: 10px;
+      background: #f0f;
+      z-index: 999;
+      animation: confetti-fall 3s linear forwards;
+    }
+
+    @keyframes confetti-fall {
+      to {
+        transform: translateY(100vh) rotate(360deg);
+        opacity: 0;
+      }
+    }
+
+    /* Dashboard */
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 15px;
+      margin-top: 20px;
+    }
+
+    .dashboard-card {
+      background: var(--bg-card);
+      padding: 15px;
+      border-radius: var(--border-radius);
+      box-shadow: var(--shadow);
+      border: 1px solid var(--border);
+    }
+
+    .dashboard-card h4 {
+      color: var(--primary);
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 14px;
+    }
+
+    .dashboard-value {
+      font-size: 28px;
+      font-weight: 700;
+      color: var(--primary);
+    }
+
+    .task-detail-modal .modal-content {
+      max-width: 600px;
+      text-align: left;
+    }
+
+    .task-detail-section {
+      margin: 15px 0;
+      padding: 15px;
+      background: rgba(102, 126, 234, 0.05);
+      border-radius: 8px;
+    }
+
+    .task-detail-section h4 {
+      color: var(--primary);
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .comment-item {
+      background: var(--bg-card);
+      padding: 10px;
+      border-radius: 8px;
+      margin: 8px 0;
+      border-left: 3px solid var(--primary);
+    }
+
+    .comment-author {
+      font-weight: 600;
+      color: var(--primary);
+      font-size: 12px;
+    }
+
+    .comment-date {
+      font-size: 11px;
+      color: var(--text-light);
+    }
+
+    .comment-text {
+      margin-top: 5px;
+      font-size: 13px;
+    }
+
+    .notification {
+      position: fixed;
+      top: 80px;
+      right: -400px;
+      background: var(--bg-card);
+      padding: 15px;
+      border-radius: var(--border-radius);
+      box-shadow: var(--shadow-hover);
+      width: 300px;
+      z-index: 1000;
+      border-left: 4px solid var(--primary);
+      transition: right 0.5s ease;
+    }
+
+    .notification.show {
+      right: 20px;
+    }
+
+    .notification-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    .notification-title {
+      font-weight: 600;
+      color: var(--primary);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .notification-close {
+      background: none;
+      border: none;
+      font-size: 18px;
+      cursor: pointer;
+      color: var(--text-light);
+    }
+
+    .notification-body {
+      color: var(--text-dark);
+      font-size: 14px;
+    }
+
+    /* Search Panel */
+    .search-panel {
+      background: var(--bg-card);
+      padding: 15px;
+      border-radius: var(--border-radius);
+      margin-bottom: 15px;
+    }
+
+    .search-input {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-family: 'Poppins', sans-serif;
+      margin-bottom: 15px;
+    }
+
+    .search-filters {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .filter-tag {
+      padding: 6px 12px;
+      border-radius: 20px;
+      border: 1px solid var(--primary);
+      background: transparent;
+      color: var(--primary);
+      cursor: pointer;
+      font-size: 12px;
+      transition: var(--transition);
+    }
+
+    .filter-tag.active {
+      background: var(--primary);
+      color: white;
+      border-color: transparent;
+    }
+
+    .search-result-item {
+      padding: 12px;
+      background: rgba(102, 126, 234, 0.05);
+      border-radius: 8px;
+      margin: 8px 0;
+      cursor: pointer;
+      transition: var(--transition);
+      border-left: 4px solid var(--primary);
+    }
+
+    .search-result-item:hover {
+      transform: translateX(5px);
+    }
+
+    /* Sistema de Perfiles de Usuario */
+    .profile-button {
+      width: 45px;
+      height: 45px;
+      border-radius: 50%;
+      cursor: pointer;
+      border: 2px solid var(--border);
+      background: var(--primary);
+      box-shadow: var(--shadow);
+      transition: var(--transition);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .profile-button:hover {
+      transform: scale(1.1);
+    }
+
+    .profile-button img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .profile-button i {
+      color: white;
+      font-size: 20px;
+    }
+
+    .profile-modal .modal-content {
+      max-width: 450px;
+    }
+
+    .profile-photo-container {
+      width: 120px;
+      height: 120px;
+      margin: 20px auto;
+      border-radius: 50%;
+      overflow: hidden;
+      border: 3px solid var(--primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--bg-light);
+      position: relative;
+    }
+
+    .profile-photo-container img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .profile-photo-container i {
+      font-size: 50px;
+      color: var(--primary);
+    }
+
+    .profile-upload-overlay {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: rgba(0, 0, 0, 0.7);
+      color: white;
+      padding: 8px;
+      text-align: center;
+      cursor: pointer;
+      transition: var(--transition);
+      opacity: 0;
+    }
+
+    .profile-photo-container:hover .profile-upload-overlay {
+      opacity: 1;
+    }
+
+    .profile-info-display {
+      text-align: center;
+      margin: 15px 0;
+    }
+
+    .profile-name {
+      font-size: 20px;
+      font-weight: 600;
+      color: var(--primary);
+      margin-bottom: 5px;
+    }
+
+    .profile-email {
+      font-size: 14px;
+      color: var(--text-light);
+    }
+
+    #profilePhotoInput {
+      display: none;
+    }
+
+    /* ========================================
+   SISTEMA DE CHAT - ESTILO MINIMALISTA
+   ======================================== */
+
+    .chat-button {
+      position: fixed;
+      bottom: 90px;
+      right: 20px;
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      background: var(--primary);
+      color: white;
+      border: none;
+      box-shadow: var(--shadow-hover);
+      cursor: pointer;
+      z-index: 20;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      transition: var(--transition);
+    }
+
+    .chat-button:hover {
+      transform: scale(1.1);
+    }
+
+    .chat-badge {
+      position: absolute;
+      top: -5px;
+      right: -5px;
+      background: var(--danger);
+      color: white;
+      border-radius: 50%;
+      width: 20px;
+      height: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+      font-weight: 600;
+      border: 2px solid var(--bg-card);
+    }
+
+    .chat-container {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      width: 350px;
+      height: 500px;
+      background: var(--bg-card);
+      border-radius: var(--border-radius);
+      box-shadow: var(--shadow-hover);
+      display: none;
+      flex-direction: column;
+      z-index: 100;
+      overflow: hidden;
+      border: 1px solid var(--border);
+    }
+
+    .chat-container.show {
+      display: flex;
+      animation: slideUp 0.3s ease;
+    }
+
+    @keyframes slideUp {
+      from {
+        transform: translateY(20px);
+        opacity: 0;
+      }
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+
+    .chat-header {
+      background: var(--primary);
+      color: white;
+      padding: 15px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-radius: var(--border-radius) var(--border-radius) 0 0;
+    }
+
+    .chat-header h3 {
+      margin: 0;
+      font-size: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .chat-close-btn {
+      background: rgba(255, 255, 255, 0.2);
+      border: none;
+      color: white;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: var(--transition);
+    }
+
+    .chat-close-btn:hover {
+      background: rgba(255, 255, 255, 0.3);
+      transform: rotate(90deg);
+    }
+
+    .chat-tabs {
+      display: flex;
+      background: var(--bg-light);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .chat-tab {
+      flex: 1;
+      padding: 12px;
+      text-align: center;
+      cursor: pointer;
+      font-weight: 500;
+      color: var(--text-light);
+      transition: var(--transition);
+      border-bottom: 2px solid transparent;
+    }
+
+    .chat-tab.active {
+      color: var(--primary);
+      border-bottom-color: var(--primary);
+      background: var(--bg-card);
+    }
+
+    .chat-tab:hover {
+      background: rgba(102, 126, 234, 0.05);
+    }
+
+    .chat-body {
+      flex: 1;
+      overflow-y: auto;
+      padding: 15px;
+      background: var(--bg-light);
+    }
+
+    /* Lista de contactos */
+    .contact-list {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .contact-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: var(--transition);
+      background: var(--bg-card);
+    }
+
+    .contact-item:hover {
+      background: rgba(102, 126, 234, 0.1);
+      transform: translateX(5px);
+    }
+
+    .contact-item.active {
+      background: var(--primary);
+      color: white;
+    }
+
+    .contact-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--primary);
+      color: white;
+      font-weight: 600;
+      flex-shrink: 0;
+      border: 2px solid var(--bg-card);
+    }
+
+    .contact-avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .contact-status {
+      position: absolute;
+      bottom: 2px;
+      right: 2px;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--success);
+      border: 2px solid var(--bg-card);
+    }
+
+    .contact-status.offline {
+      background: var(--text-light);
+    }
+
+    .contact-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .contact-name {
+      font-weight: 600;
+      color: var(--text-dark);
+      margin-bottom: 2px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .contact-item.active .contact-name {
+      color: white;
+    }
+
+    .contact-preview {
+      font-size: 12px;
+      color: var(--text-light);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .contact-item.active .contact-preview {
+      color: rgba(255, 255, 255, 0.8);
+    }
+
+    .unread-badge {
+      background: var(--danger);
+      color: white;
+      border-radius: 10px;
+      padding: 2px 6px;
+      font-size: 10px;
+      font-weight: 600;
+      min-width: 18px;
+      text-align: center;
+    }
+
+    /* Mensajes del chat */
+    .new-chat-btn {
+      width: 100%;
+      padding: 10px;
+      background: var(--primary);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      margin-bottom: 15px;
+      transition: var(--transition);
+    }
+
+    .new-chat-btn:hover {
+      background: var(--primary-dark);
+      transform: translateY(-2px);
+    }
+
+    .chat-input-modal {
+      background: var(--bg-card);
+      padding: 15px;
+      border-radius: 8px;
+      margin: 15px;
+    }
+
+    .chat-input-modal input {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-family: 'Poppins', sans-serif;
+      margin-bottom: 10px;
+    }
+
+    .chat-messages {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .message-date-separator {
+      text-align: center;
+      color: var(--text-light);
+      font-size: 11px;
+      margin: 10px 0;
+      position: relative;
+    }
+
+    .message-date-separator::before,
+    .message-date-separator::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      width: 30%;
+      height: 1px;
+      background: var(--border);
+    }
+
+    .message-date-separator::before {
+      left: 0;
+    }
+
+    .message-date-separator::after {
+      right: 0;
+    }
+
+    .message-item {
+      display: flex;
+      gap: 8px;
+      align-items: flex-end;
+      animation: messageSlide 0.3s ease;
+    }
+
+    @keyframes messageSlide {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .message-item.own {
+      flex-direction: row-reverse;
+    }
+
+    .message-avatar {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--primary);
+      color: white;
+      font-size: 11px;
+      font-weight: 600;
+      flex-shrink: 0;
+    }
+
+    .message-avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .message-content {
+      max-width: 70%;
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+
+    .message-item.own .message-content {
+      align-items: flex-end;
+    }
+
+    .message-sender {
+      font-size: 10px;
+      color: var(--text-light);
+      font-weight: 500;
+      padding: 0 8px;
+    }
+
+    .message-bubble {
+      background: var(--bg-card);
+      padding: 8px 12px;
+      border-radius: 15px;
+      word-wrap: break-word;
+      box-shadow: var(--shadow);
+    }
+
+    .message-item.own .message-bubble {
+      background: var(--primary);
+      color: white;
+    }
+
+    .message-text {
+      font-size: 13px;
+      line-height: 1.4;
+    }
+
+    .message-time {
+      font-size: 9px;
+      color: var(--text-light);
+      margin-top: 3px;
+      padding: 0 8px;
+    }
+
+    .message-item.own .message-time {
+      color: rgba(255, 255, 255, 0.7);
+    }
+
+    .typing-indicator {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 12px;
+      background: var(--bg-card);
+      border-radius: 15px;
+      width: fit-content;
+    }
+
+    .typing-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--primary);
+      animation: typingBounce 1.4s infinite;
+    }
+
+    .typing-dot:nth-child(2) {
+      animation-delay: 0.2s;
+    }
+
+    .typing-dot:nth-child(3) {
+      animation-delay: 0.4s;
+    }
+
+    @keyframes typingBounce {
+      0%, 60%, 100% {
+        transform: translateY(0);
+      }
+      30% {
+        transform: translateY(-6px);
+      }
+    }
+
+    /* Input de mensaje */
+    .chat-input-container {
+      padding: 12px;
+      background: var(--bg-card);
+      border-top: 1px solid var(--border);
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .chat-input {
+      flex: 1;
+      padding: 10px 12px;
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      font-family: 'Poppins', sans-serif;
+      font-size: 13px;
+      background: var(--bg-light);
+      color: var(--text-dark);
+      transition: var(--transition);
+    }
+
+    .chat-input:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+
+    .chat-send-btn {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: var(--primary);
+      color: white;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      transition: var(--transition);
+      flex-shrink: 0;
+    }
+
+    .chat-send-btn:hover {
+      background: var(--primary-dark);
+      transform: scale(1.1);
+    }
+
+    .chat-send-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .empty-chat-state {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100%;
+      color: var(--text-light);
+      text-align: center;
+      padding: 20px;
+    }
+
+    .empty-chat-state i {
+      font-size: 50px;
+      margin-bottom: 15px;
+      opacity: 0.5;
+    }
+
+    .chat-back-btn {
+      background: rgba(255, 255, 255, 0.2);
+      border: none;
+      color: white;
+      padding: 6px 10px;
+      border-radius: 15px;
+      cursor: pointer;
+      display: none;
+      align-items: center;
+      gap: 5px;
+      font-size: 12px;
+      transition: var(--transition);
+    }
+
+    .chat-back-btn:hover {
+      background: rgba(255, 255, 255, 0.3);
+    }
+
+    .chat-attachment-btn {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: rgba(102, 126, 234, 0.1);
+      color: var(--primary);
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      transition: var(--transition);
+      flex-shrink: 0;
+    }
+
+    .chat-attachment-btn:hover {
+      background: rgba(102, 126, 234, 0.2);
+      transform: scale(1.1);
+    }
+
+    .message-attachment {
+      margin-top: 6px;
+      padding: 8px;
+      background: rgba(0, 0, 0, 0.05);
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+    }
+
+    .message-attachment i {
+      font-size: 16px;
+      color: var(--primary);
+    }
+
+    .attachment-info {
+      flex: 1;
+    }
+
+    .attachment-name {
+      font-size: 11px;
+      font-weight: 500;
+    }
+
+    .attachment-size {
+      font-size: 9px;
+      color: var(--text-light);
+    }
+
+    .message-status {
+      display: inline-flex;
+      align-items: center;
+      gap: 2px;
+      margin-left: 5px;
+    }
+
+    .message-status i {
+      font-size: 9px;
+      color: #90caf9;
+    }
+
+    .message-status.read i {
+      color: #2196f3;
+    }
+
+    /* Responsive */
+    @media (max-width: 1024px) {
+      #topBar {
+        flex-wrap: wrap;
+        height: auto;
+        padding: 15px;
+      }
+
+      .app-header {
+        width: 100%;
+        text-align: center;
+        align-items: center;
+        margin-bottom: 15px;
+      }
+    }
+
+    @media (max-width: 768px) {
+      #controlsPanel {
+        width: calc(100% - 40px);
+        bottom: 10px;
+        left: 20px;
+        padding: 15px;
+      }
+
+      #statsPanel {
+        width: calc(100% - 40px);
+        top: 80px;
+        left: 20px;
+        right: auto;
+      }
+
+      .bubble {
+        width: 140px;
+        height: 140px;
+      }
+
+      .main-action-btn {
+        bottom: 10px;
+        left: 10px;
+      }
+
+      .chat-container {
+        width: 100%;
+        height: 100vh;
+        bottom: 0;
+        right: 0;
+        border-radius: 0;
+      }
+
+      .chat-button {
+        bottom: 70px;
+        right: 15px;
+      }
+
+      .message-content {
+        max-width: 85%;
+      }
+
+      .chat-back-btn {
+        display: flex;
+      }
+    }
+  </style>
+
+  <!-- Firebase -->
+  <script type="module">
+    // EL CÓDIGO JAVASCRIPT COMPLETO SE MANTIENE EXACTAMENTE IGUAL
+    // Solo se ha modificado el CSS para un diseño más minimalista
+    // La funcionalidad completa se mantiene intacta
+    
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
+    import {
+      getFirestore, collection, doc, setDoc, getDocs, orderBy, query, updateDoc, deleteDoc,
+      where, Timestamp, addDoc
+    } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
+    import {
+      getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut
+    } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyDvo_9L5wuemV0r9fkKszpD5YmrnWN_VkQ",
+      authDomain: "escape-351f6.firebaseapp.com",
+      projectId: "escape-351f6",
+      storageBucket: "escape-351f6.firebasestorage.app",
+      messagingSenderId: "1058162494779",
+      appId: "1:1058162494779:web:63300b96a9a4864602fb1e"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const auth = getAuth(app);
+
+    window.auth = auth;
+    window.db = db;
+
+    let registeredUsers = [];
+    let tasks = [];
+    let completed = 0;
+    let pending = 0;
+    let currentLevel = 1;
+    let currentTags = [];
+    let isDarkMode = false;
+    let notificationQueue = [];
+    let userProfiles = {};
+    let currentUserProfile = { name: '', photo: '' };
+    let chatMessages = {};
+    let currentChatUser = null;
+    let unreadMessages = 0;
+    let typingTimeouts = {};
+
+    const levelNames = ["Prioridad Baja", "Prioridad Media", "Prioridad Alta"];
+    const levelBackgrounds = [
+      'var(--bg-light)',
+      'var(--bg-light)', 
+      'var(--bg-light)'
+    ];
+
+    // Tema oscuro
+    window.toggleDarkMode = function () {
+      isDarkMode = !isDarkMode;
+      document.body.classList.toggle('dark-mode', isDarkMode);
+      const icon = document.querySelector('.theme-toggle i');
+      icon.className = isDarkMode ? 'fas fa-sun' : 'fas fa-moon';
+    }
+
+    // Mostrar app
+    function showApp() {
+      document.getElementById('loginScreen').style.display = 'none';
+      document.getElementById('app').style.display = 'block';
+      updateDate();
+      loadUserProfile();
+      loadBubbles();
+      loadChatMessages();
+      checkNotifications();
+      checkNewMessages();
+    }
+
+    window.logout = function () {
+      signOut(auth).then(() => {
+        document.getElementById('app').style.display = 'none';
+        document.getElementById('loginScreen').style.display = 'flex';
+        showNotification('Sesión cerrada exitosamente', 'info');
+      });
+    }
+
+    function updateDate() {
+      const now = new Date();
+      const days = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
+      const months = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+
+      document.getElementById('date-day').innerText = days[now.getDay()];
+      document.getElementById('date-full').innerText = `${now.getDate()} de ${months[now.getMonth()]}, ${now.getFullYear()}`;
+    }
+
+    setInterval(updateDate, 60000);
+
+    document.getElementById('sky').style.background = levelBackgrounds[currentLevel];
+    document.getElementById('levelIndicator').innerText = levelNames[currentLevel];
+
+    // Sistema de notificaciones
+    function showNotification(message, type = 'info') {
+      const notification = document.createElement('div');
+      notification.className = 'notification show';
+
+      const icons = {
+        info: 'fa-info-circle',
+        success: 'fa-check-circle',
+        warning: 'fa-exclamation-triangle',
+        error: 'fa-times-circle'
+      };
+
+      notification.innerHTML = `
+      <div class="notification-header">
+        <div class="notification-title">
+          <i class="fas ${icons[type]}"></i>
+          ${type.charAt(0).toUpperCase() + type.slice(1)}
+        </div>
+        <button class="notification-close" onclick="this.parentElement.parentElement.remove()">×</button>
+      </div>
+      <div class="notification-body">${message}</div>
+    `;
+
+      document.body.appendChild(notification);
+
+      setTimeout(() => {
+        notification.classList.remove('show');
+        setTimeout(() => notification.remove(), 500);
+      }, 5000);
+    }
+
+    // Verificar notificaciones de tareas próximas a vencer
+    function checkNotifications() {
+      const now = new Date();
+
+      tasks.forEach(task => {
+        const deadline = task.bubble.dataset.deadline;
+        if (!deadline || task.bubble.dataset.completed === 'true') return;
+
+        const deadlineDate = new Date(deadline);
+        const timeDiff = deadlineDate - now;
+        const hoursDiff = timeDiff / (1000 * 60 * 60);
+
+        if (hoursDiff > 0 && hoursDiff <= 1 && !task.notified) {
+          showNotification(`⚠️ La tarea "${task.bubble.dataset.name}" vence en menos de 1 hora`, 'warning');
+          task.notified = true;
+        }
+      });
+
+      setTimeout(checkNotifications, 300000);
+    }
+
+    function getTimeStatus(deadline) {
+      if (!deadline) return 'normal';
+
+      const now = new Date();
+      const deadlineDate = new Date(deadline);
+      const timeDiff = deadlineDate - now;
+      const hoursDiff = timeDiff / (1000 * 60 * 60);
+
+      if (timeDiff < 0) return 'expired';
+      if (hoursDiff <= 2) return 'critical';
+      if (hoursDiff <= 24) return 'warning';
+      return 'normal';
+    }
+
+    function formatTimeRemaining(deadline) {
+      if (!deadline) return '';
+
+      const now = new Date();
+      const deadlineDate = new Date(deadline);
+      const timeDiff = deadlineDate - now;
+
+      if (timeDiff < 0) return 'Vencida';
+
+      const days = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
+      const hours = Math.floor((timeDiff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      const minutes = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
+
+      if (days > 0) return `${days}d ${hours}h`;
+      if (hours > 0) return `${hours}h ${minutes}m`;
+      return `${minutes}m`;
+    }
+
+    function updateTimeStates() {
+      tasks.forEach(task => {
+        const bubble = task.bubble;
+        const deadline = bubble.dataset.deadline;
+        const timeStatus = getTimeStatus(deadline);
+
+        bubble.classList.remove('time-warning', 'time-critical', 'expired');
+
+        if (timeStatus === 'warning') bubble.classList.add('time-warning');
+        if (timeStatus === 'critical') bubble.classList.add('time-critical');
+        if (timeStatus === 'expired') bubble.classList.add('expired');
+
+        const deadlineElement = bubble.querySelector('.bubble-deadline');
+        if (deadlineElement) {
+          deadlineElement.textContent = formatTimeRemaining(deadline);
+          deadlineElement.className = `bubble-deadline ${timeStatus}`;
+        }
+      });
+    }
+
+    setInterval(updateTimeStates, 60000);
+
+    // Login/Register
+    window.login = function () {
+      const email = document.getElementById('loginEmail').value;
+      const password = document.getElementById('loginPassword').value;
+
+      if (!email || !password) {
+        showNotification('Por favor, completa todos los campos', 'error');
+        return;
+      }
+
+      signInWithEmailAndPassword(auth, email, password)
+        .then(() => {
+          showNotification('Login exitoso', 'success');
+          showApp();
+        })
+        .catch(err => showNotification(err.message, 'error'));
+    }
+
+    window.register = function () {
+      const email = document.getElementById('loginEmail').value;
+      const password = document.getElementById('loginPassword').value;
+
+      if (!email || !password) {
+        showNotification('Por favor, completa todos los campos', 'error');
+        return;
+      }
+
+      createUserWithEmailAndPassword(auth, email, password)
+        .then(() => {
+          showNotification('Usuario registrado exitosamente', 'success');
+          showApp();
+          if (!registeredUsers.includes(email)) {
+            registeredUsers.push(email);
+          }
+        })
+        .catch(err => showNotification(err.message, 'error'));
+    }
+
+    function isValidEmail(email) {
+      return registeredUsers.includes(email);
+    }
+
+    // Tags
+    window.addTag = function (event) {
+      if (event.key === 'Enter' && event.target.value.trim()) {
+        const tag = event.target.value.trim();
+        if (!currentTags.includes(tag)) {
+          currentTags.push(tag);
+          renderTags();
+        }
+        event.target.value = '';
+      }
+    }
+
+    window.removeTag = function (tag) {
+      currentTags = currentTags.filter(t => t !== tag);
+      renderTags();
+    }
+
+    function renderTags() {
+      const container = document.getElementById('tagsContainer');
+      container.innerHTML = currentTags.map(tag => `
+      <div class="tag-item">
+        ${tag}
+        <button onclick="removeTag('${tag}')">×</button>
+      </div>
+    `).join('');
+    }
+
+    // Agregar tarea
+    window.addTask = function () {
+      const name = document.getElementById('taskName').value.trim();
+      const area = document.getElementById('area').value.trim();
+      const responsable = document.getElementById('responsable').value.trim();
+      const priority = parseInt(document.getElementById('priority').value);
+      const deadline = document.getElementById('deadline').value;
+      const notes = document.getElementById('taskNotes').value.trim();
+
+      if (!name || !area || !responsable) {
+        showNotification('Completa todos los campos obligatorios', 'error');
+        return;
+      }
+
+      if (!isValidEmail(responsable)) {
+        showNotification('El correo del responsable debe estar registrado', 'error');
+        return;
+      }
+
+      const user = auth.currentUser;
+      if (!user) {
+        showNotification('Inicia sesión primero', 'error');
+        return;
+      }
+
+      const bubbleRef = doc(db, "users", user.uid, "bubbles", Date.now().toString());
+
+      const container = document.getElementById('bubble-container');
+      const maxX = container.offsetWidth - 170;
+      const maxY = container.offsetHeight - 170;
+
+      const data = {
+        name, area, responsable, priority, level: priority - 1, completed: 'false',
+        deadline: deadline || null,
+        tags: currentTags,
+        notes: notes || '',
+        comments: [],
+        x: Math.random() * maxX,
+        y: Math.random() * maxY,
+        createdAt: Date.now(),
+        createdBy: user.email
+      };
+
+      setDoc(bubbleRef, data).then(() => {
+        createBubbleFromData(data, bubbleRef.id);
+        showNotification('Tarea creada exitosamente', 'success');
+      });
+
+      document.getElementById('taskName').value = '';
+      document.getElementById('deadline').value = '';
+      document.getElementById('taskNotes').value = '';
+      currentTags = [];
+      renderTags();
+    }
+
+    // Crear burbuja
+    function createBubbleFromData(data, id) {
+      if (tasks.some(task => task.id === id)) return;
+
+      const bubble = document.createElement('div');
+      bubble.className = `bubble priority-${data.priority}`;
+      bubble.dataset.level = data.level;
+      bubble.dataset.priority = data.priority;
+      bubble.dataset.completed = data.completed;
+      bubble.dataset.responsable = data.responsable;
+      bubble.dataset.name = data.name;
+      bubble.dataset.area = data.area;
+      bubble.dataset.deadline = data.deadline || '';
+      bubble.dataset.notes = data.notes || '';
+      bubble.dataset.id = id;
+
+      const container = document.getElementById('bubble-container');
+      bubble.style.left = data.x + 'px';
+      bubble.style.top = data.y + 'px';
+
+      const tagsHtml = data.tags && data.tags.length > 0 ? `
+      <div class="bubble-tags">
+        ${data.tags.map(tag => `<span class="bubble-tag">${tag}</span>`).join('')}
+      </div>
+    ` : '';
+
+      const deadlineHtml = data.deadline ?
+        `<div class="bubble-deadline">${formatTimeRemaining(data.deadline)}</div>` : '';
+
+      bubble.innerHTML = `
+      <div class="bubble-content">
+        <div class="bubble-title">${data.name}</div>
+        <div class="bubble-detail"><i class="fas fa-briefcase"></i> ${data.area}</div>
+        <div class="bubble-detail"><i class="fas fa-user"></i> ${data.responsable}</div>
+        ${tagsHtml}
+        ${deadlineHtml}
+      </div>
+      
+      <button class="completeBtn" onclick="completeBubble(this)">
+        <i class="fas fa-check"></i> Completar
+      </button>
+      <div class="viewBtn" onclick="viewTaskDetail('${id}')" title="Ver detalles">
+        <i class="fas fa-eye"></i>
+      </div>
+      <div class="deleteBtn" onclick="deleteBubble(this)">
+        <i class="fas fa-times"></i>
+      </div>
+    `;
+
+      if (data.completed === 'true') {
+        bubble.classList.add('completed');
+        completed++;
+      } else {
+        pending++;
+      }
+
+      const timeStatus = getTimeStatus(data.deadline);
+      if (timeStatus === 'warning') bubble.classList.add('time-warning');
+      if (timeStatus === 'critical') bubble.classList.add('time-critical');
+      if (timeStatus === 'expired') bubble.classList.add('expired');
+
+      container.appendChild(bubble);
+
+      // Sistema de arrastre
+      let isDragging = false;
+      let dragOffsetX = 0;
+      let dragOffsetY = 0;
+      let currentX = parseFloat(bubble.style.left);
+      let currentY = parseFloat(bubble.style.top);
+
+      const startDrag = (e) => {
+        if (e.target.tagName === 'BUTTON' || e.target.tagName === 'I') return;
+        e.preventDefault();
+        isDragging = true;
+
+        const rect = bubble.getBoundingClientRect();
+        const containerRect = container.getBoundingClientRect();
+
+        dragOffsetX = e.clientX - rect.left;
+        dragOffsetY = e.clientY - rect.top;
+
+        bubble.style.cursor = 'grabbing';
+        bubble.style.zIndex = '100';
+        bubble.style.transition = 'none';
+
+        document.addEventListener('mousemove', doDrag);
+        document.addEventListener('mouseup', stopDrag);
+      };
+
+      const doDrag = (e) => {
+        if (!isDragging) return;
+
+        const containerRect = container.getBoundingClientRect();
+
+        let newX = e.clientX - containerRect.left - dragOffsetX;
+        let newY = e.clientY - containerRect.top - dragOffsetY;
+
+        newX = Math.max(0, Math.min(container.offsetWidth - bubble.offsetWidth, newX));
+        newY = Math.max(0, Math.min(container.offsetHeight - bubble.offsetHeight, newY));
+
+        bubble.style.left = newX + 'px';
+        bubble.style.top = newY + 'px';
+
+        currentX = newX;
+        currentY = newY;
+      };
+
+      const stopDrag = () => {
+        if (!isDragging) return;
+
+        isDragging = false;
+
+        bubble.style.cursor = 'grab';
+        bubble.style.zIndex = '5';
+        bubble.style.transition = 'all 0.3s ease';
+
+        document.removeEventListener('mousemove', doDrag);
+        document.removeEventListener('mouseup', stopDrag);
+
+        const user = auth.currentUser;
+        if (user) {
+          updateDoc(doc(db, "users", user.uid, "bubbles", id), {
+            x: currentX,
+            y: currentY
+          });
+        }
+      };
+
+      bubble.addEventListener('mousedown', startDrag);
+
+      // Animación flotante
+      let velX = (Math.random() - 0.5) * 2;
+      let velY = (Math.random() - 0.5) * 2;
+      const speed = 0.7 + data.priority * 0.2;
+
+      function floatBubble() {
+        if (parseInt(bubble.dataset.level) === currentLevel &&
+          bubble.dataset.completed === 'false' &&
+          !isDragging) {
+
+          let x = parseFloat(bubble.style.left);
+          let y = parseFloat(bubble.style.top);
+
+          if (x <= 0 || x >= container.offsetWidth - bubble.offsetWidth) {
+            velX *= -1;
+            x = x <= 0 ? 0 : container.offsetWidth - bubble.offsetWidth;
+          }
+
+          if (y <= 0 || y >= container.offsetHeight - bubble.offsetHeight) {
+            velY *= -1;
+            y = y <= 0 ? 0 : container.offsetHeight - bubble.offsetHeight;
+          }
+
+          x += velX * speed;
+          y += velY * speed;
+
+          bubble.style.left = x + 'px';
+          bubble.style.top = y + 'px';
+
+          currentX = x;
+          currentY = y;
+        }
+        requestAnimationFrame(floatBubble);
+      }
+
+      floatBubble();
+
+      tasks.push({ bubble, level: data.level, id: id, notified: false });
+      updateStats();
+    }
+
+    // Confetti
+    function createConfetti() {
+      for (let i = 0; i < 50; i++) {
+        setTimeout(() => {
+          const confetti = document.createElement('div');
+          confetti.className = 'confetti';
+          confetti.style.left = Math.random() * window.innerWidth + 'px';
+          confetti.style.top = '0px';
+          confetti.style.background = `hsl(${Math.random() * 360}, 100%, 50%)`;
+          confetti.style.transform = `rotate(${Math.random() * 360}deg)`;
+          document.body.appendChild(confetti);
+
+          setTimeout(() => confetti.remove(), 3000);
+        }, i * 30);
+      }
+    }
+
+    // Completar tarea
+    window.completeBubble = function (btn) {
+      const bubble = btn.parentElement;
+      const user = auth.currentUser;
+
+      if (bubble.dataset.responsable !== user.email) {
+        showNotification('Solo el responsable puede completar esta tarea', 'error');
+        return;
+      }
+
+      if (bubble.dataset.completed === 'false') {
+        bubble.dataset.completed = 'true';
+        bubble.classList.add('completed');
+        bubble.classList.remove('time-warning', 'time-critical', 'expired');
+        completed++;
+        pending--;
+        updateStats();
+
+        createConfetti();
+        showNotification('¡Tarea completada! 🎉', 'success');
+
+        const historyData = {
+          name: bubble.dataset.name,
+          area: bubble.dataset.area,
+          responsable: bubble.dataset.responsable,
+          priority: bubble.dataset.priority,
+          completedAt: new Date().toISOString(),
+          completedBy: user.email
+        };
+
+        const historyRef = doc(db, "users", user.uid, "history", Date.now().toString());
+        setDoc(historyRef, historyData);
+
+        updateDoc(doc(db, "users", user.uid, "bubbles", bubble.dataset.id), { completed: 'true' });
+      }
+    };
+
+    window.deleteBubble = function (btn) {
+      if (!confirm("¿Deseas borrar esta tarea?")) return;
+      const bubble = btn.parentElement;
+      const user = auth.currentUser;
+      deleteDoc(doc(db, "users", user.uid, "bubbles", bubble.dataset.id));
+      bubble.remove();
+      if (bubble.dataset.completed === 'true') {
+        completed--;
+      } else {
+        pending--;
+      }
+      tasks = tasks.filter(task => task.id !== bubble.dataset.id);
+      updateStats();
+      showNotification('Tarea eliminada', 'info');
+    }
+
+    window.deleteCompletedTasks = function () {
+      const user = auth.currentUser;
+      if (!user) return;
+
+      if (!confirm("¿Estás seguro de eliminar todas las tareas completadas?")) return;
+
+      const completedTasks = tasks.filter(task => task.bubble.dataset.completed === 'true');
+
+      if (completedTasks.length === 0) {
+        showNotification('No hay tareas completadas para eliminar', 'info');
+        return;
+      }
+
+      completedTasks.forEach(task => {
+        deleteDoc(doc(db, "users", user.uid, "bubbles", task.bubble.dataset.id));
+        task.bubble.remove();
+      });
+
+      completed = 0;
+      tasks = tasks.filter(task => task.bubble.dataset.completed !== 'true');
+      updateStats();
+
+      showNotification(`Se eliminaron ${completedTasks.length} tareas completadas`, 'success');
+    };
+
+    function updateStats() {
+      document.getElementById('completed').innerText = completed;
+      document.getElementById('pending').innerText = pending;
+      const total = tasks.length;
+      document.getElementById('efficiency').innerText = total ? Math.round(completed / total * 100) + '%' : '0%';
+    }
+
+    window.changeLevel = function (delta) {
+      currentLevel = Math.min(2, Math.max(0, currentLevel + delta));
+      document.getElementById('sky').style.background = levelBackgrounds[currentLevel];
+      document.getElementById('levelIndicator').innerText = levelNames[currentLevel];
+      tasks.forEach(t => {
+        t.bubble.style.display = (parseInt(t.bubble.dataset.level) === currentLevel) ? 'flex' : 'none';
+      });
+    }
+
+    // Ver detalles de tarea
+    window.viewTaskDetail = function (taskId) {
+      const task = tasks.find(t => t.id === taskId);
+      if (!task) return;
+
+      const bubble = task.bubble;
+      const modal = document.getElementById('taskDetailModal');
+
+      document.getElementById('detailName').textContent = bubble.dataset.name;
+      document.getElementById('detailArea').textContent = bubble.dataset.area;
+      document.getElementById('detailResponsable').textContent = bubble.dataset.responsable;
+      document.getElementById('detailPriority').textContent = levelNames[parseInt(bubble.dataset.priority) - 1];
+      document.getElementById('detailDeadline').textContent = bubble.dataset.deadline ?
+        new Date(bubble.dataset.deadline).toLocaleString('es-ES') : 'Sin fecha límite';
+      document.getElementById('detailNotes').textContent = bubble.dataset.notes || 'Sin notas';
+
+      modal.style.display = 'block';
+      modal.dataset.currentTaskId = taskId;
+    }
+
+    window.closeTaskDetailModal = function () {
+      document.getElementById('taskDetailModal').style.display = 'none';
+    }
+
+    window.addComment = function () {
+      const commentText = document.getElementById('newComment').value.trim();
+      if (!commentText) return;
+
+      const user = auth.currentUser;
+      const taskId = document.getElementById('taskDetailModal').dataset.currentTaskId;
+
+      const comment = {
+        text: commentText,
+        author: user.email,
+        date: new Date().toISOString()
+      };
+
+      const commentItem = document.createElement('div');
+      commentItem.className = 'comment-item';
+      commentItem.innerHTML = `
+      <div class="comment-author">${comment.author}</div>
+      <div class="comment-date">${new Date(comment.date).toLocaleString('es-ES')}</div>
+      <div class="comment-text">${comment.text}</div>
+    `;
+
+      document.getElementById('commentsList').appendChild(commentItem);
+      document.getElementById('newComment').value = '';
+
+      showNotification('Comentario agregado', 'success');
+    }
+
+    // Historial
+    window.openHistoryModal = function () {
+      document.getElementById('historyModal').style.display = 'block';
+      loadHistory();
+    }
+
+    window.closeHistoryModal = function () {
+      document.getElementById('historyModal').style.display = 'none';
+    }
+
+    async function loadHistory(filter = 'all') {
+      const user = auth.currentUser;
+      if (!user) return;
+
+      const historyList = document.getElementById('historyList');
+      historyList.innerHTML = '<p>Cargando historial...</p>';
+
+      try {
+        let q;
+        const now = new Date();
+
+        if (filter === 'week') {
+          const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+          q = query(
+            collection(db, "users", user.uid, "history"),
+            where("completedAt", ">=", weekAgo.toISOString()),
+            orderBy("completedAt", "desc")
+          );
+        } else if (filter === 'month') {
+          const monthAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+          q = query(
+            collection(db, "users", user.uid, "history"),
+            where("completedAt", ">=", monthAgo.toISOString()),
+            orderBy("completedAt", "desc")
+          );
+        } else {
+          q = query(collection(db, "users", user.uid, "history"), orderBy("completedAt", "desc"));
+        }
+
+        const snapshot = await getDocs(q);
+        historyList.innerHTML = '';
+
+        if (snapshot.empty) {
+          historyList.innerHTML = '<p>No hay tareas completadas en el historial.</p>';
+          return;
+        }
+
+        snapshot.forEach(docSnap => {
+          const data = docSnap.data();
+          const completedDate = new Date(data.completedAt);
+          const formattedDate = completedDate.toLocaleDateString('es-ES', {
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+          });
+
+          const historyItem = document.createElement('div');
+          historyItem.className = 'history-item';
+          historyItem.innerHTML = `
+          <div class="history-info">
+            <div><strong>${data.name}</strong> - ${data.area}</div>
+            <div>Responsable: ${data.responsable}</div>
+            <div class="history-date">Completada: ${formattedDate} por ${data.completedBy}</div>
+          </div>
+        `;
+
+          historyList.appendChild(historyItem);
+        });
+      } catch (error) {
+        console.error("Error cargando historial:", error);
+        historyList.innerHTML = '<p>Error al cargar el historial.</p>';
+      }
+    }
+
+    window.filterHistory = function () {
+      const filter = document.getElementById('historyFilter').value;
+      loadHistory(filter);
+    }
+
+    // Dashboard
+    window.openDashboard = function () {
+      document.getElementById('dashboardModal').style.display = 'block';
+      loadDashboard();
+    }
+
+    window.closeDashboard = function () {
+      document.getElementById('dashboardModal').style.display = 'none';
+    }
+
+    function loadDashboard() {
+      const totalTasks = tasks.length;
+      const completedPercentage = totalTasks ? Math.round((completed / totalTasks) * 100) : 0;
+
+      const highPriority = tasks.filter(t => t.bubble.dataset.priority === '3' && t.bubble.dataset.completed === 'false').length;
+      const mediumPriority = tasks.filter(t => t.bubble.dataset.priority === '2' && t.bubble.dataset.completed === 'false').length;
+      const lowPriority = tasks.filter(t => t.bubble.dataset.priority === '1' && t.bubble.dataset.completed === 'false').length;
+
+      const areaStats = {};
+      tasks.forEach(task => {
+        const area = task.bubble.dataset.area;
+        if (!areaStats[area]) areaStats[area] = 0;
+        if (task.bubble.dataset.completed === 'false') areaStats[area]++;
+      });
+
+      const urgentTasks = tasks.filter(t => {
+        const status = getTimeStatus(t.bubble.dataset.deadline);
+        return (status === 'critical' || status === 'expired') && t.bubble.dataset.completed === 'false';
+      }).length;
+
+      document.getElementById('dashboardStats').innerHTML = `
+      <div class="dashboard-grid">
+        <div class="dashboard-card">
+          <h4><i class="fas fa-tasks"></i> Total de Tareas</h4>
+          <div class="dashboard-value">${totalTasks}</div>
+        </div>
+        
+        <div class="dashboard-card">
+          <h4><i class="fas fa-check-circle"></i> Completadas</h4>
+          <div class="dashboard-value">${completed}</div>
+          <p style="margin-top: 10px; color: var(--text-light);">${completedPercentage}% de eficiencia</p>
+        </div>
+        
+        <div class="dashboard-card">
+          <h4><i class="fas fa-clock"></i> Pendientes</h4>
+          <div class="dashboard-value">${pending}</div>
+        </div>
+        
+        <div class="dashboard-card">
+          <h4><i class="fas fa-exclamation-triangle"></i> Urgentes</h4>
+          <div class="dashboard-value">${urgentTasks}</div>
+        </div>
+        
+        <div class="dashboard-card">
+          <h4><i class="fas fa-flag"></i> Por Prioridad</h4>
+          <div style="margin-top: 15px; text-align: left;">
+            <div class="stat-item">
+              <span>Alta:</span>
+              <span class="stat-value">${highPriority}</span>
+            </div>
+            <div class="stat-item">
+              <span>Media:</span>
+              <span class="stat-value">${mediumPriority}</span>
+            </div>
+            <div class="stat-item">
+              <span>Baja:</span>
+              <span class="stat-value">${lowPriority}</span>
+            </div>
+          </div>
+        </div>
+        
+        <div class="dashboard-card">
+          <h4><i class="fas fa-briefcase"></i> Por Área</h4>
+          <div style="margin-top: 15px; text-align: left; max-height: 150px; overflow-y: auto;">
+            ${Object.entries(areaStats).map(([area, count]) => `
+              <div class="stat-item">
+                <span>${area}:</span>
+                <span class="stat-value">${count}</span>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      </div>
+    `;
+    }
+
+    // Búsqueda
+    window.openSearch = function () {
+      document.getElementById('searchModal').style.display = 'block';
+    }
+
+    window.closeSearch = function () {
+      document.getElementById('searchModal').style.display = 'none';
+    }
+
+    window.performSearch = function () {
+      const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+      const filterArea = document.getElementById('filterArea').value;
+      const filterPriority = document.getElementById('filterPriority').value;
+      const filterStatus = document.getElementById('filterStatus').value;
+
+      const results = tasks.filter(task => {
+        const bubble = task.bubble;
+        const matchesSearch = !searchTerm ||
+          bubble.dataset.name.toLowerCase().includes(searchTerm) ||
+          bubble.dataset.area.toLowerCase().includes(searchTerm) ||
+          bubble.dataset.responsable.toLowerCase().includes(searchTerm);
+
+        const matchesArea = !filterArea || bubble.dataset.area === filterArea;
+        const matchesPriority = !filterPriority || bubble.dataset.priority === filterPriority;
+        const matchesStatus = !filterStatus ||
+          (filterStatus === 'completed' && bubble.dataset.completed === 'true') ||
+          (filterStatus === 'pending' && bubble.dataset.completed === 'false');
+
+        return matchesSearch && matchesArea && matchesPriority && matchesStatus;
+      });
+
+      const resultsContainer = document.getElementById('searchResults');
+
+      if (results.length === 0) {
+        resultsContainer.innerHTML = '<p style="text-align: center; color: var(--text-light); padding: 20px;">No se encontraron resultados</p>';
+        return;
+      }
+
+      resultsContainer.innerHTML = results.map(task => {
+        const bubble = task.bubble;
+        return `
+        <div class="search-result-item" onclick="highlightBubble('${task.id}')">
+          <div style="display: flex; justify-content: space-between; align-items: start;">
+            <div>
+              <strong style="color: var(--primary-dark); font-size: 16px;">${bubble.dataset.name}</strong>
+              <div style="font-size: 13px; color: var(--text-light); margin-top: 5px;">
+                <i class="fas fa-briefcase"></i> ${bubble.dataset.area} | 
+                <i class="fas fa-user"></i> ${bubble.dataset.responsable}
+              </div>
+            </div>
+            <div style="text-align: right;">
+              <span style="font-size: 11px; padding: 4px 8px; border-radius: 12px; background: var(--primary); color: white;">
+                ${levelNames[parseInt(bubble.dataset.priority) - 1]}
+              </span>
+            </div>
+          </div>
+          ${bubble.dataset.deadline ? `
+            <div style="margin-top: 8px; font-size: 12px; color: var(--text-light);">
+              <i class="fas fa-clock"></i> ${formatTimeRemaining(bubble.dataset.deadline)}
+            </div>
+          ` : ''}
+        </div>
+      `;
+      }).join('');
+    }
+
+    window.highlightBubble = function (taskId) {
+      const task = tasks.find(t => t.id === taskId);
+      if (!task) return;
+
+      const bubbleLevel = parseInt(task.bubble.dataset.level);
+      if (currentLevel !== bubbleLevel) {
+        changeLevel(bubbleLevel - currentLevel);
+      }
+
+      task.bubble.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      task.bubble.style.animation = 'pulse-critical 0.5s 3';
+
+      setTimeout(() => {
+        task.bubble.style.animation = '';
+      }, 1500);
+
+      closeSearch();
+    }
+
+    window.clearSearchFilters = function () {
+      document.getElementById('searchInput').value = '';
+      document.getElementById('filterArea').value = '';
+      document.getElementById('filterPriority').value = '';
+      document.getElementById('filterStatus').value = '';
+      document.getElementById('searchResults').innerHTML = '<p style="text-align: center; color: var(--text-light); padding: 20px;">Ingresa criterios de búsqueda</p>';
+    }
+
+    // Función para toggle del menú desplegable
+    window.toggleDropdown = function () {
+      const dropdownContent = document.querySelector('.dropdown-content');
+      dropdownContent.classList.toggle('show');
+    }
+
+    document.addEventListener('click', function (event) {
+      const dropdown = document.querySelector('.dropdown');
+      const dropdownContent = document.querySelector('.dropdown-content');
+
+      if (!dropdown.contains(event.target) && dropdownContent.classList.contains('show')) {
+        dropdownContent.classList.remove('show');
+      }
+    });
+
+    async function loadRegisteredUsers() {
+      try {
+        const usersSnapshot = await getDocs(collection(db, "users"));
+        usersSnapshot.forEach(userDoc => {
+          getDocs(collection(db, "users", userDoc.id, "userData")).then(snapshot => {
+            snapshot.forEach(doc => {
+              if (doc.data().email && !registeredUsers.includes(doc.data().email)) {
+                registeredUsers.push(doc.data().email);
+              }
+            });
+          });
+        });
+      } catch (error) {
+        console.error("Error cargando usuarios:", error);
+      }
+    }
+
+    async function loadBubbles() {
+      const user = auth.currentUser;
+      if (!user) return;
+
+      tasks = [];
+      completed = 0;
+      pending = 0;
+      const container = document.getElementById('bubble-container');
+      container.innerHTML = '';
+
+      if (!registeredUsers.includes(user.email)) {
+        registeredUsers.push(user.email);
+      }
+
+      const q = query(collection(db, "users", user.uid, "bubbles"), orderBy("createdAt"));
+      const snapshot = await getDocs(q);
+      snapshot.forEach(docSnap => {
+        createBubbleFromData(docSnap.data(), docSnap.id);
+      });
+
+      updateTimeStates();
+    }
+
+    // Toggle para mostrar/ocultar el panel de controles
+    window.toggleControlsPanel = function () {
+      const panel = document.getElementById('controlsPanel');
+      panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
+    }
+
+    // Event listeners para cerrar modales
+    document.querySelectorAll('.modal').forEach(modal => {
+      modal.addEventListener('click', function (e) {
+        if (e.target === this) {
+          this.style.display = 'none';
+        }
+      });
+    });
+
+    // ========================================
+    // SISTEMA DE PERFILES DE USUARIO
+    // ========================================
+
+    window.openProfile = function () {
+      const modal = document.getElementById('profileModal');
+      const user = auth.currentUser;
+
+      if (!user) return;
+
+      document.getElementById('profileDisplayEmail').textContent = user.email;
+      document.getElementById('profileNameInput').value = currentUserProfile.name || '';
+
+      if (currentUserProfile.name) {
+        document.getElementById('profileDisplayName').textContent = currentUserProfile.name;
+      } else {
+        document.getElementById('profileDisplayName').textContent = user.email.split('@')[0];
+      }
+
+      if (currentUserProfile.photo) {
+        document.getElementById('profilePhotoPreview').src = currentUserProfile.photo;
+        document.getElementById('profilePhotoPreview').style.display = 'block';
+        document.getElementById('profilePhotoIcon').style.display = 'none';
+      } else {
+        document.getElementById('profilePhotoPreview').style.display = 'none';
+        document.getElementById('profilePhotoIcon').style.display = 'block';
+      }
+
+      modal.style.display = 'block';
+    }
+
+    window.closeProfile = function () {
+      document.getElementById('profileModal').style.display = 'none';
+    }
+
+    window.handleProfilePhotoUpload = function (event) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      if (file.size > 2 * 1024 * 1024) {
+        showNotification('La imagen no debe superar 2MB', 'error');
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        const photoData = e.target.result;
+
+        document.getElementById('profilePhotoPreview').src = photoData;
+        document.getElementById('profilePhotoPreview').style.display = 'block';
+        document.getElementById('profilePhotoIcon').style.display = 'none';
+
+        currentUserProfile.photo = photoData;
+      };
+      reader.readAsDataURL(file);
+    }
+
+    window.saveProfile = function () {
+      const user = auth.currentUser;
+      if (!user) return;
+
+      const name = document.getElementById('profileNameInput').value.trim();
+
+      if (!name) {
+        showNotification('Por favor ingresa un nombre', 'error');
+        return;
+      }
+
+      currentUserProfile.name = name;
+      userProfiles[user.email] = currentUserProfile;
+
+      const profileRef = doc(db, "users", user.uid, "profile", "data");
+      setDoc(profileRef, {
+        name: currentUserProfile.name,
+        photo: currentUserProfile.photo,
+        email: user.email,
+        updatedAt: Date.now()
+      }).then(() => {
+        showNotification('Perfil actualizado exitosamente', 'success');
+        updateTopBarProfile();
+        closeProfile();
+      }).catch(err => {
+        showNotification('Error al guardar perfil: ' + err.message, 'error');
+      });
+    }
+
+    async function loadUserProfile() {
+      const user = auth.currentUser;
+      if (!user) return;
+
+      try {
+        const profileDoc = await getDocs(collection(db, "users", user.uid, "profile"));
+
+        if (!profileDoc.empty) {
+          profileDoc.forEach(doc => {
+            const data = doc.data();
+            currentUserProfile = {
+              name: data.name || '',
+              photo: data.photo || ''
+            };
+            userProfiles[user.email] = currentUserProfile;
+          });
+        } else {
+          currentUserProfile = { name: user.email.split('@')[0], photo: '' };
+        }
+
+        updateTopBarProfile();
+      } catch (error) {
+        console.error("Error cargando perfil:", error);
+        currentUserProfile = { name: user.email.split('@')[0], photo: '' };
+        updateTopBarProfile();
+      }
+    }
+
+    function updateTopBarProfile() {
+      const photoImg = document.getElementById('topBarProfilePhoto');
+      const photoIcon = document.getElementById('topBarProfileIcon');
+
+      if (currentUserProfile.photo) {
+        photoImg.src = currentUserProfile.photo;
+        photoImg.style.display = 'block';
+        photoIcon.style.display = 'none';
+      } else {
+        photoImg.style.display = 'none';
+        photoIcon.style.display = 'block';
+      }
+    }
+
+    function getUserDisplayName(email) {
+      if (userProfiles[email] && userProfiles[email].name) {
+        return userProfiles[email].name;
+      }
+      return email.split('@')[0];
+    }
+
+    function getUserPhoto(email) {
+      if (userProfiles[email] && userProfiles[email].photo) {
+        return userProfiles[email].photo;
+      }
+      return '';
+    }
+
+    // ========================================
+    // SISTEMA DE CHAT
+    // ========================================
+
+    window.toggleChat = function () {
+      const chatContainer = document.getElementById('chatContainer');
+      chatContainer.classList.toggle('show');
+
+      if (chatContainer.classList.contains('show')) {
+        loadContacts();
+      }
+    }
+
+    window.switchChatTab = function (tab) {
+      const tabs = document.querySelectorAll('.chat-tab');
+      tabs.forEach(t => t.classList.remove('active'));
+      event.target.closest('.chat-tab').classList.add('active');
+
+      if (tab === 'contacts') {
+        showContactList();
+      } else if (tab === 'tasks') {
+        showTasksChat();
+      }
+    }
+
+    function loadContacts() {
+      const contactList = document.getElementById('contactListView');
+
+      const newChatBtn = document.createElement('button');
+      newChatBtn.className = 'new-chat-btn';
+      newChatBtn.innerHTML = '<i class="fas fa-plus-circle"></i> Iniciar nueva conversación';
+      newChatBtn.onclick = showNewChatInput;
+
+      const uniqueUsers = new Set();
+      tasks.forEach(task => {
+        const responsable = task.bubble.dataset.responsable;
+        if (responsable && responsable !== auth.currentUser.email) {
+          uniqueUsers.add(responsable);
+        }
+      });
+
+      Object.keys(chatMessages).forEach(email => {
+        if (email !== auth.currentUser.email) {
+          uniqueUsers.add(email);
+        }
+      });
+
+      contactList.innerHTML = '';
+      contactList.appendChild(newChatBtn);
+
+      if (uniqueUsers.size === 0) {
+        const emptyState = document.createElement('div');
+        emptyState.className = 'empty-chat-state';
+        emptyState.innerHTML = `
+      <i class="fas fa-user-friends"></i>
+      <p>No hay contactos aún</p>
+      <p style="font-size: 12px; margin-top: 10px;">Usa el botón de arriba para iniciar una conversación</p>
+    `;
+        contactList.appendChild(emptyState);
+        return;
+      }
+
+      uniqueUsers.forEach(email => {
+        const userName = getUserDisplayName(email);
+        const userPhoto = getUserPhoto(email);
+        const unreadCount = getUnreadCount(email);
+        const lastMessage = getLastMessage(email);
+
+        const contactItem = document.createElement('div');
+        contactItem.className = 'contact-item';
+        contactItem.onclick = () => openConversation(email);
+
+        contactItem.innerHTML = `
+      <div class="contact-avatar">
+        ${userPhoto ? `<img src="${userPhoto}" alt="${userName}">` : userName.charAt(0).toUpperCase()}
+        <div class="contact-status"></div>
+      </div>
+      <div class="contact-info">
+        <div class="contact-name">${userName}</div>
+        <div class="contact-preview">${lastMessage || 'Sin mensajes'}</div>
+      </div>
+      ${unreadCount > 0 ? `<div class="unread-badge">${unreadCount}</div>` : ''}
+    `;
+
+        contactList.appendChild(contactItem);
+      });
+    }
+
+    function checkNewMessages() {
+      const user = auth.currentUser;
+      if (!user) return;
+
+      setInterval(async () => {
+        try {
+          const messagesSnapshot = await getDocs(
+            query(
+              collection(db, "users", user.uid, "messages"),
+              where("receiver", "==", user.email),
+              where("read", "==", false)
+            )
+          );
+
+          if (!messagesSnapshot.empty) {
+            updateUnreadBadge();
+
+            const lastMsg = messagesSnapshot.docs[messagesSnapshot.docs.length - 1].data();
+            const senderName = getUserDisplayName(lastMsg.sender);
+
+            showNotification(
+              `💬 Nuevo mensaje de ${senderName}: ${lastMsg.text.substring(0, 30)}...`,
+              'info'
+            );
+          }
+        } catch (error) {
+          console.error("Error checking messages:", error);
+        }
+      }, 5000);
+    }
+
+    window.showNewChatInput = function () {
+      const contactList = document.getElementById('contactListView');
+
+      const inputModal = document.createElement('div');
+      inputModal.className = 'chat-input-modal';
+      inputModal.innerHTML = `
+    <h4 style="margin-bottom: 15px; color: var(--primary);">
+      <i class="fas fa-envelope"></i> Nueva conversación
+    </h4>
+    <input 
+      type="email" 
+      id="newChatEmail" 
+      placeholder="Ingresa el email del usuario..."
+    >
+    <div style="display: flex; gap: 10px;">
+      <button onclick="startNewChat()" style="flex: 1; padding: 10px; background: var(--primary); color: white; border: none; border-radius: 8px; cursor: pointer;">
+        <i class="fas fa-check"></i> Iniciar
+      </button>
+      <button onclick="loadContacts()" style="flex: 1; padding: 10px; background: var(--border); color: var(--text-dark); border: none; border-radius: 8px; cursor: pointer;">
+        <i class="fas fa-times"></i> Cancelar
+      </button>
+    </div>
+  `;
+
+      contactList.innerHTML = '';
+      contactList.appendChild(inputModal);
+
+      setTimeout(() => {
+        document.getElementById('newChatEmail').focus();
+      }, 100);
+    }
+
+    window.startNewChat = function () {
+      const email = document.getElementById('newChatEmail').value.trim();
+
+      if (!email) {
+        showNotification('Por favor ingresa un email', 'error');
+        return;
+      }
+
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(email)) {
+        showNotification('Por favor ingresa un email válido', 'error');
+        return;
+      }
+
+      if (email === auth.currentUser.email) {
+        showNotification('No puedes chatear contigo mismo', 'error');
+        return;
+      }
+
+      if (!chatMessages[email]) {
+        chatMessages[email] = [];
+      }
+
+      openConversation(email);
+      showNotification(`Conversación iniciada con ${email}`, 'success');
+    }
+
+    window.showContactList = function () {
+      document.getElementById('contactListView').style.display = 'flex';
+      document.getElementById('conversationView').style.display = 'none';
+      document.getElementById('chatHeaderTitle').textContent = 'Mensajes';
+      currentChatUser = null;
+    }
+
+    window.openConversation = function (email) {
+      currentChatUser = email;
+      const userName = getUserDisplayName(email);
+
+      document.getElementById('contactListView').style.display = 'none';
+      document.getElementById('conversationView').style.display = 'block';
+      document.getElementById('chatHeaderTitle').textContent = userName;
+
+      loadMessages(email);
+      markMessagesAsRead(email);
+    }
+
+    function loadMessages(email) {
+      const messagesContainer = document.getElementById('chatMessages');
+      messagesContainer.innerHTML = '';
+
+      const messages = chatMessages[email] || [];
+
+      if (messages.length === 0) {
+        messagesContainer.innerHTML = `
+      <div class="empty-chat-state">
+        <i class="fas fa-comments"></i>
+        <p>No hay mensajes aún</p>
+        <p style="font-size: 12px; margin-top: 10px;">Inicia la conversación</p>
+      </div>
+    `;
+        return;
+      }
+
+      let lastDate = '';
+
+      messages.forEach(msg => {
+        const msgDate = new Date(msg.timestamp);
+        const dateStr = msgDate.toLocaleDateString('es-ES', {
+          day: 'numeric',
+          month: 'short'
+        });
+
+        if (dateStr !== lastDate) {
+          const separator = document.createElement('div');
+          separator.className = 'message-date-separator';
+          separator.textContent = dateStr;
+          messagesContainer.appendChild(separator);
+          lastDate = dateStr;
+        }
+
+        const messageDiv = document.createElement('div');
+        messageDiv.className = `message-item ${msg.sender === auth.currentUser.email ? 'own' : ''}`;
+
+        const senderName = getUserDisplayName(msg.sender);
+        const senderPhoto = getUserPhoto(msg.sender);
+        const timeStr = msgDate.toLocaleTimeString('es-ES', {
+          hour: '2-digit',
+          minute: '2-digit'
+        });
+
+        let attachmentHTML = '';
+        if (msg.file) {
+          const fileSize = (msg.file.size / 1024).toFixed(2);
+          const isImage = msg.file.type.startsWith('image/');
+
+          if (isImage) {
+            attachmentHTML = `
+      <div class="message-attachment" onclick="window.open('${msg.file.data}', '_blank')">
+        <img src="${msg.file.data}" style="max-width: 200px; border-radius: 8px;">
+      </div>
+    `;
+          } else {
+            attachmentHTML = `
+      <div class="message-attachment" onclick="window.open('${msg.file.data}', '_blank')">
+        <i class="fas fa-file"></i>
+        <div class="attachment-info">
+          <div class="attachment-name">${msg.file.name}</div>
+          <div class="attachment-size">${fileSize} KB</div>
+        </div>
+        <i class="fas fa-download"></i>
+      </div>
+    `;
+          }
+        }
+
+        messageDiv.innerHTML = `
+  <div class="message-avatar">
+    ${senderPhoto ? `<img src="${senderPhoto}" alt="${senderName}">` : senderName.charAt(0).toUpperCase()}
+  </div>
+  <div class="message-content">
+    ${msg.sender !== auth.currentUser.email ? `<div class="message-sender">${senderName}</div>` : ''}
+    <div class="message-bubble">
+      <div class="message-text">${msg.text}</div>
+      ${attachmentHTML}
+    </div>
+    <div class="message-time">
+  ${timeStr}
+  ${msg.sender === auth.currentUser.email ? `
+    <span class="message-status ${msg.read ? 'read' : ''}">
+      <i class="fas fa-check"></i>
+      ${msg.read ? '<i class="fas fa-check"></i>' : ''}
+    </span>
+  ` : ''}
+</div>
+  </div>
+`;
+
+        messagesContainer.appendChild(messageDiv);
+      });
+
+      messagesContainer.scrollTop = messagesContainer.scrollHeight;
+    }
+
+    window.sendMessage = function () {
+      const input = document.getElementById('chatInput');
+      const text = input.value.trim();
+
+      if (!text || !currentChatUser) return;
+
+      const message = {
+        sender: auth.currentUser.email,
+        receiver: currentChatUser,
+        text: text,
+        timestamp: Date.now(),
+        read: false
+      };
+
+      if (!chatMessages[currentChatUser]) {
+        chatMessages[currentChatUser] = [];
+      }
+      chatMessages[currentChatUser].push(message);
+
+      const user = auth.currentUser;
+      const messageRef = doc(db, "users", user.uid, "messages", Date.now().toString());
+      setDoc(messageRef, message);
+
+      input.value = '';
+
+      loadMessages(currentChatUser);
+
+      showNotification(`Mensaje enviado a ${getUserDisplayName(currentChatUser)}`, 'success');
+    }
+
+    window.handleChatKeyPress = function (event) {
+      if (event.key === 'Enter') {
+        sendMessage();
+      }
+    }
+
+    window.handleFileUpload = function (event) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      if (file.size > 5 * 1024 * 1024) {
+        showNotification('El archivo no debe superar 5MB', 'error');
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        const fileData = {
+          name: file.name,
+          size: file.size,
+          type: file.type,
+          data: e.target.result
+        };
+
+        sendFileMessage(fileData);
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function sendFileMessage(fileData) {
+      if (!currentChatUser) return;
+
+      const message = {
+        sender: auth.currentUser.email,
+        receiver: currentChatUser,
+        text: `📎 Archivo: ${fileData.name}`,
+        timestamp: Date.now(),
+        read: false,
+        file: fileData
+      };
+
+      if (!chatMessages[currentChatUser]) {
+        chatMessages[currentChatUser] = [];
+      }
+      chatMessages[currentChatUser].push(message);
+
+      const user = auth.currentUser;
+      const messageRef = doc(db, "users", user.uid, "messages", Date.now().toString());
+      setDoc(messageRef, message);
+
+      loadMessages(currentChatUser);
+      showNotification('Archivo enviado', 'success');
+    }
+
+    function getUnreadCount(email) {
+      const messages = chatMessages[email] || [];
+      return messages.filter(msg =>
+        msg.receiver === auth.currentUser.email && !msg.read
+      ).length;
+    }
+
+    function getLastMessage(email) {
+      const messages = chatMessages[email] || [];
+      if (messages.length === 0) return '';
+
+      const lastMsg = messages[messages.length - 1];
+      const prefix = lastMsg.sender === auth.currentUser.email ? 'Tú: ' : '';
+      return prefix + lastMsg.text.substring(0, 30) + (lastMsg.text.length > 30 ? '...' : '');
+    }
+
+    function markMessagesAsRead(email) {
+      const messages = chatMessages[email] || [];
+      messages.forEach(msg => {
+        if (msg.receiver === auth.currentUser.email) {
+          msg.read = true;
+        }
+      });
+
+      updateUnreadBadge();
+    }
+
+    function updateUnreadBadge() {
+      let total = 0;
+      Object.values(chatMessages).forEach(messages => {
+        total += messages.filter(msg =>
+          msg.receiver === auth.currentUser.email && !msg.read
+        ).length;
+      });
+
+      unreadMessages = total;
+      const badge = document.getElementById('chatBadge');
+
+      if (total > 0) {
+        badge.textContent = total > 99 ? '99+' : total;
+        badge.style.display = 'flex';
+      } else {
+        badge.style.display = 'none';
+      }
+    }
+
+    function showTasksChat() {
+      const contactList = document.getElementById('contactListView');
+      contactList.innerHTML = '<h4 style="padding: 20px; text-align: center; color: var(--text-light);">Vista de tareas en desarrollo...</h4>';
+    }
+
+    async function loadChatMessages() {
+      const user = auth.currentUser;
+      if (!user) return;
+
+      try {
+        const messagesSnapshot = await getDocs(collection(db, "users", user.uid, "messages"));
+
+        messagesSnapshot.forEach(doc => {
+          const msg = doc.data();
+          const otherUser = msg.sender === user.email ? msg.receiver : msg.sender;
+
+          if (!chatMessages[otherUser]) {
+            chatMessages[otherUser] = [];
+          }
+
+          chatMessages[otherUser].push(msg);
+        });
+
+        Object.keys(chatMessages).forEach(email => {
+          chatMessages[email].sort((a, b) => a.timestamp - b.timestamp);
+        });
+
+        updateUnreadBadge();
+      } catch (error) {
+        console.error("Error cargando mensajes:", error);
+      }
+    }
+
+    auth.onAuthStateChanged(user => {
+      if (user) {
+        showApp();
+        loadRegisteredUsers();
+      }
+    });
+  </script>
+</head>
+
+<body>
+  <!-- El HTML completo se mantiene exactamente igual -->
+  <!-- Solo se ha modificado el CSS para un diseño más minimalista -->
+  <!-- La estructura HTML y toda la funcionalidad se mantienen intactas -->
+
+  <!-- Pantalla de login -->
+  <div id="loginScreen">
+    <div class="login-container">
+      <h2>TaskBubbles Pro V2</h2>
+      <p class="app-info">✨ Gestión inteligente de tareas</p>
+      <input type="email" id="loginEmail" placeholder="Correo electrónico">
+      <input type="password" id="loginPassword" placeholder="Contraseña">
+      <div>
+        <button onclick="login()"><i class="fas fa-sign-in-alt"></i> Iniciar Sesión</button>
+        <button onclick="register()"><i class="fas fa-user-plus"></i> Registrarse</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Aplicación principal -->
+  <div id="app">
+    <div id="sky">
+      <div id="bubble-container"></div>
+    </div>
+
+    <!-- Barra superior -->
+    <div id="topBar">
+      <div class="app-header">
+        <div class="app-logo">TaskBubbles Pro</div>
+        <div class="app-slogan">Gestión inteligente</div>
+      </div>
+
+      <div class="date-container">
+        <div id="date-day" class="date-day"></div>
+        <div id="date-full" class="date-full"></div>
+      </div>
+
+      <div id="levelControls">
+        <span id="levelIndicator">Prioridad Media</span>
+        <button onclick="changeLevel(1)" title="Subir nivel"><i class="fas fa-arrow-up"></i></button>
+        <button onclick="changeLevel(-1)" title="Bajar nivel"><i class="fas fa-arrow-down"></i></button>
+        <button class="theme-toggle" onclick="toggleDarkMode()" title="Cambiar tema">
+          <i class="fas fa-moon"></i>
+        </button>
+      </div>
+
+      <div id="authControls">
+        <div class="profile-button" onclick="openProfile()" title="Mi Perfil">
+          <img id="topBarProfilePhoto" src="" style="display: none;" alt="Perfil">
+          <i id="topBarProfileIcon" class="fas fa-user"></i>
+        </div>
+        <button onclick="logout()"><i class="fas fa-sign-out-alt"></i> <span>Cerrar sesión</span></button>
+      </div>
+    </div>
+
+    <!-- Botón principal para abrir panel de tareas -->
+    <button class="main-action-btn" onclick="toggleControlsPanel()">
+      <i class="fas fa-plus"></i>
+    </button>
+
+    <!-- Panel de controles -->
+    <div id="controlsPanel">
+      <h3><i class="fas fa-plus-circle"></i> Nueva Tarea</h3>
+      <input type="text" id="taskName" placeholder="Nombre de tarea *">
+      <select id="area">
+        <option value="" disabled selected>Selecciona un área *</option>
+        <option>Ventas</option>
+        <option>Inventario</option>
+        <option>Atención al Cliente</option>
+        <option>Merchandising</option>
+        <option>Caja</option>
+        <option>Almacén</option>
+        <option>Limpieza</option>
+        <option>Seguridad</option>
+        <option>Gerencia</option>
+        <option>Marketing</option>
+        <option>Recursos Humanos</option>
+        <option>IT/Sistemas</option>
+        <option>Logística</option>
+        <option>Calidad</option>
+      </select>
+      <input type="text" id="responsable" placeholder="Email del responsable *">
+      <select id="priority">
+        <option value="1">Prioridad Baja</option>
+        <option value="2" selected>Prioridad Media</option>
+        <option value="3">Prioridad Alta</option>
+      </select>
+      <input type="datetime-local" id="deadline" title="Fecha límite (opcional)">
+
+      <div style="margin: 10px 0;">
+        <label style="font-size: 12px; color: var(--text-light); display: block; margin-bottom: 5px;">
+          <i class="fas fa-tags"></i> Etiquetas (presiona Enter)
+        </label>
+        <input type="text" placeholder="Agregar etiqueta..." onkeypress="addTag(event)" style="margin: 5px 0;">
+        <div id="tagsContainer" class="tags-input-container"></div>
+      </div>
+
+      <textarea id="taskNotes" placeholder="Notas adicionales (opcional)"></textarea>
+
+      <button onclick="addTask()"><i class="fas fa-plus"></i> Agregar tarea</button>
+
+      <!-- Menú desplegable para las opciones -->
+      <div class="dropdown" style="margin-top: 15px;">
+        <button class="action-btn primary" onclick="toggleDropdown()">
+          <i class="fas fa-cog"></i> Acciones
+          <i class="fas fa-chevron-down" style="font-size: 12px;"></i>
+        </button>
+        <div class="dropdown-content">
+          <button onclick="openSearch()">
+            <i class="fas fa-search"></i> Buscar tareas
+          </button>
+          <button onclick="openDashboard()">
+            <i class="fas fa-chart-line"></i> Dashboard
+          </button>
+          <button onclick="openHistoryModal()">
+            <i class="fas fa-history"></i> Ver Historial
+          </button>
+          <button onclick="deleteCompletedTasks()">
+            <i class="fas fa-trash"></i> Eliminar completadas
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Panel de estadísticas -->
+    <div id="statsPanel">
+      <h3><i class="fas fa-chart-pie"></i> Estadísticas</h3>
+      <div class="stat-item">
+        <span><i class="fas fa-check-circle"></i> Completadas:</span>
+        <span class="stat-value" id="completed">0</span>
+      </div>
+      <div class="stat-item">
+        <span><i class="fas fa-clock"></i> Pendientes:</span>
+        <span class="stat-value" id="pending">0</span>
+      </div>
+      <div class="stat-item">
+        <span><i class="fas fa-percentage"></i> Eficiencia:</span>
+        <span class="stat-value" id="efficiency">0%</span>
+      </div>
+    </div>
+
+    <!-- Modal de historial -->
+    <div id="historyModal" class="modal">
+      <div class="modal-content history-modal" style="max-width: 800px;">
+        <button class="modal-close" onclick="closeHistoryModal()"><i class="fas fa-times"></i></button>
+        <h3><i class="fas fa-history"></i> Historial de Tareas Completadas</h3>
+
+        <div class="filter-controls">
+          <select id="historyFilter" onchange="filterHistory()">
+            <option value="all">Todas</option>
+            <option value="week">Última semana</option>
+            <option value="month">Último mes</option>
+          </select>
+        </div>
+
+        <div id="historyList">
+          <p>Selecciona un filtro para ver el historial.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal de detalles de tarea -->
+    <div id="taskDetailModal" class="modal task-detail-modal">
+      <div class="modal-content">
+        <button class="modal-close" onclick="closeTaskDetailModal()"><i class="fas fa-times"></i></button>
+        <h3><i class="fas fa-eye"></i> Detalles de la Tarea</h3>
+
+        <div class="task-detail-section">
+          <h4><i class="fas fa-info-circle"></i> Información General</h4>
+          <div class="stat-item">
+            <span>Nombre:</span>
+            <span id="detailName" style="font-weight: 600;"></span>
+          </div>
+          <div class="stat-item">
+            <span>Área:</span>
+            <span id="detailArea"></span>
+          </div>
+          <div class="stat-item">
+            <span>Responsable:</span>
+            <span id="detailResponsable"></span>
+          </div>
+          <div class="stat-item">
+            <span>Prioridad:</span>
+            <span id="detailPriority"></span>
+          </div>
+          <div class="stat-item">
+            <span>Fecha límite:</span>
+            <span id="detailDeadline"></span>
+          </div>
+        </div>
+
+        <div class="task-detail-section">
+          <h4><i class="fas fa-sticky-note"></i> Notas</h4>
+          <p id="detailNotes" style="color: var(--text-dark);"></p>
+        </div>
+
+        <div class="task-detail-section">
+          <h4><i class="fas fa-comments"></i> Comentarios</h4>
+          <div id="commentsList"></div>
+          <textarea id="newComment" placeholder="Agregar un comentario..."
+            style="margin-top: 10px; min-height: 60px;"></textarea>
+          <button onclick="addComment()" style="margin-top: 10px;">
+            <i class="fas fa-paper-plane"></i> Enviar comentario
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal de Dashboard -->
+    <div id="dashboardModal" class="modal">
+      <div class="modal-content" style="max-width: 900px;">
+        <button class="modal-close" onclick="closeDashboard()"><i class="fas fa-times"></i></button>
+        <h3><i class="fas fa-chart-line"></i> Dashboard Analítico</h3>
+        <div id="dashboardStats"></div>
+      </div>
+    </div>
+
+    <!-- Modal de Perfil de Usuario -->
+    <div id="profileModal" class="modal profile-modal">
+      <div class="modal-content">
+        <button class="modal-close" onclick="closeProfile()"><i class="fas fa-times"></i></button>
+        <h3><i class="fas fa-user-circle"></i> Mi Perfil</h3>
+
+        <div class="profile-photo-container" onclick="document.getElementById('profilePhotoInput').click()">
+          <img id="profilePhotoPreview" src="" style="display: none;" alt="Foto de perfil">
+          <i id="profilePhotoIcon" class="fas fa-user-circle"></i>
+          <div class="profile-upload-overlay">
+            <i class="fas fa-camera"></i> Cambiar foto
+          </div>
+        </div>
+
+        <input type="file" id="profilePhotoInput" accept="image/*" onchange="handleProfilePhotoUpload(event)">
+
+        <div class="profile-info-display">
+          <div class="profile-name" id="profileDisplayName">Usuario</div>
+          <div class="profile-email" id="profileDisplayEmail"></div>
+        </div>
+
+        <div style="margin-top: 20px;">
+          <label style="display: block; margin-bottom: 8px; color: var(--text-dark); font-weight: 500;">
+            <i class="fas fa-signature"></i> Nombre de usuario
+          </label>
+          <input type="text" id="profileNameInput" placeholder="Ingresa tu nombre">
+          <button onclick="saveProfile()" style="margin-top: 15px; width: 100%;">
+            <i class="fas fa-save"></i> Guardar cambios
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal de Búsqueda -->
+    <div id="searchModal" class="modal">
+      <div class="modal-content" style="max-width: 700px;">
+        <button class="modal-close" onclick="closeSearch()"><i class="fas fa-times"></i></button>
+        <h3><i class="fas fa-search"></i> Buscar y Filtrar Tareas</h3>
+
+        <div class="search-panel">
+          <input type="text" id="searchInput" class="search-input"
+            placeholder="🔍 Buscar por nombre, área o responsable..." onkeyup="performSearch()">
+
+          <div class="search-filters">
+            <select id="filterArea" onchange="performSearch()">
+              <option value="">Todas las áreas</option>
+              <option>Ventas</option>
+              <option>Inventario</option>
+              <option>Atención al Cliente</option>
+              <option>Merchandising</option>
+              <option>Caja</option>
+              <option>Almacén</option>
+              <option>Limpieza</option>
+              <option>Seguridad</option>
+              <option>Gerencia</option>
+              <option>Marketing</option>
+              <option>Recursos Humanos</option>
+              <option>IT/Sistemas</option>
+              <option>Logística</option>
+              <option>Calidad</option>
+            </select>
+
+            <select id="filterPriority" onchange="performSearch()">
+              <option value="">Todas las prioridades</option>
+              <option value="1">Prioridad Baja</option>
+              <option value="2">Prioridad Media</option>
+              <option value="3">Prioridad Alta</option>
+            </select>
+
+            <select id="filterStatus" onchange="performSearch()">
+              <option value="">Todos los estados</option>
+              <option value="pending">Pendientes</option>
+              <option value="completed">Completadas</option>
+            </select>
+
+            <button onclick="clearSearchFilters()" style="padding: 8px 15px; background: var(--danger); color: white;">
+              <i class="fas fa-times"></i> Limpiar
+            </button>
+          </div>
+        </div>
+
+        <div id="searchResults" style="max-height: 400px; overflow-y: auto;">
+          <p style="text-align: center; color: var(--text-light); padding: 20px;">Ingresa criterios de búsqueda</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Sistema de Chat -->
+    <button class="chat-button" onclick="toggleChat()">
+      <i class="fas fa-comments"></i>
+      <span class="chat-badge" id="chatBadge" style="display: none;">0</span>
+    </button>
+
+    <div class="chat-container" id="chatContainer">
+      <div class="chat-header">
+        <button class="chat-back-btn" onclick="showContactList()">
+          <i class="fas fa-arrow-left"></i> Volver
+        </button>
+        <h3>
+          <i class="fas fa-comments"></i>
+          <span id="chatHeaderTitle">Mensajes</span>
+        </h3>
+        <button class="chat-close-btn" onclick="toggleChat()">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+
+      <div class="chat-tabs">
+        <div class="chat-tab active" onclick="switchChatTab('contacts')">
+          <i class="fas fa-users"></i> Contactos
+        </div>
+        <div class="chat-tab" onclick="switchChatTab('tasks')">
+          <i class="fas fa-tasks"></i> Tareas
+        </div>
+      </div>
+
+      <div class="chat-body" id="chatBody">
+        <!-- Vista de contactos -->
+        <div id="contactListView" class="contact-list">
+          <div class="empty-chat-state">
+            <i class="fas fa-user-friends"></i>
+            <p>No hay contactos disponibles</p>
+          </div>
+        </div>
+
+        <!-- Vista de conversación -->
+        <div id="conversationView" style="display: none; height: 100%;">
+          <div class="chat-messages" id="chatMessages">
+            <!-- Mensajes se cargan aquí -->
+          </div>
+        </div>
+      </div>
+
+      <div class="chat-input-container">
+        <input type="file" id="chatFileInput" style="display: none;" onchange="handleFileUpload(event)">
+        <button class="chat-attachment-btn" onclick="document.getElementById('chatFileInput').click()">
+          <i class="fas fa-paperclip"></i>
+        </button>
+        <input type="text" class="chat-input" id="chatInput" placeholder="Escribe un mensaje..."
+          onkeypress="handleChatKeyPress(event)">
+        <button class="chat-send-btn" onclick="sendMessage()">
+          <i class="fas fa-paper-plane"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+</body>
+
+</html>
