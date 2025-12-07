@@ -3442,38 +3442,6 @@
         loadRegisteredUsers();
       }
     });
-
-    // 🔥 Cargar correos almacenados en Firebase Database
-function cargarCorreosResponsables() {
-  const select = document.getElementById("responsable");
-  
-  select.innerHTML = '<option value="" disabled selected>Selecciona un responsable *</option>';
-  
-  firebase.auth().createUserWithEmailAndPassword(email, password)
-  .then(userCredential => {
-    firebase.database().ref("usuarios/" + userCredential.user.uid).set({
-      email: email
-    });
-  });
-
-
-  firebase.database().ref("usuarios").once("value").then(snapshot => {
-    snapshot.forEach(child => {
-      const email = child.val().email;
-
-      if (email) {
-        const option = document.createElement("option");
-        option.value = email;
-        option.textContent = email;
-        select.appendChild(option);
-      }
-    });
-  }).catch(error => {
-    console.error("Error al cargar responsables:", error);
-  });
-}
-
-window.addEventListener("load", cargarCorreosResponsables);
   </script>
 </head>
 
