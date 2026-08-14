@@ -9,6 +9,7 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
     :root {
+    
       --primary: #667eea;
       --primary-light: #8a9ef5;
       --primary-dark: #5a67d8;
@@ -1864,11 +1865,8 @@
     }
   </style>
 
-  <!-- Firebase -->
   <script type="module">
-    // EL CÓDIGO JAVASCRIPT COMPLETO SE MANTIENE EXACTAMENTE IGUAL
-    // Solo se ha modificado el CSS para un diseño más minimalista
-    // La funcionalidad completa se mantiene intacta
+
     
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
     import {
@@ -1917,7 +1915,6 @@
       'var(--bg-light)'
     ];
 
-    // Tema oscuro
     window.toggleDarkMode = function () {
       isDarkMode = !isDarkMode;
       document.body.classList.toggle('dark-mode', isDarkMode);
@@ -1925,7 +1922,6 @@
       icon.className = isDarkMode ? 'fas fa-sun' : 'fas fa-moon';
     }
 
-    // Mostrar app
     function showApp() {
       document.getElementById('loginScreen').style.display = 'none';
       document.getElementById('app').style.display = 'block';
@@ -1959,7 +1955,6 @@
     document.getElementById('sky').style.background = levelBackgrounds[currentLevel];
     document.getElementById('levelIndicator').innerText = levelNames[currentLevel];
 
-    // Sistema de notificaciones
     function showNotification(message, type = 'info') {
       const notification = document.createElement('div');
       notification.className = 'notification show';
@@ -1990,7 +1985,6 @@
       }, 5000);
     }
 
-    // Verificar notificaciones de tareas próximas a vencer
     function checkNotifications() {
       const now = new Date();
 
@@ -2065,7 +2059,6 @@
 
     setInterval(updateTimeStates, 60000);
 
-    // Login/Register
     window.login = function () {
       const email = document.getElementById('loginEmail').value;
       const password = document.getElementById('loginPassword').value;
@@ -2107,7 +2100,6 @@
       return registeredUsers.includes(email);
     }
 
-    // Tags
     window.addTag = function (event) {
       if (event.key === 'Enter' && event.target.value.trim()) {
         const tag = event.target.value.trim();
@@ -2134,7 +2126,6 @@
     `).join('');
     }
 
-    // Agregar tarea
     window.addTask = function () {
       const name = document.getElementById('taskName').value.trim();
       const area = document.getElementById('area').value.trim();
@@ -2189,7 +2180,6 @@
       renderTags();
     }
 
-    // Crear burbuja
     function createBubbleFromData(data, id) {
       if (tasks.some(task => task.id === id)) return;
 
@@ -2252,7 +2242,6 @@
 
       container.appendChild(bubble);
 
-      // Sistema de arrastre
       let isDragging = false;
       let dragOffsetX = 0;
       let dragOffsetY = 0;
@@ -2319,7 +2308,6 @@
 
       bubble.addEventListener('mousedown', startDrag);
 
-      // Animación flotante
       let velX = (Math.random() - 0.5) * 2;
       let velY = (Math.random() - 0.5) * 2;
       const speed = 0.7 + data.priority * 0.2;
@@ -2360,7 +2348,6 @@
       updateStats();
     }
 
-    // Confetti
     function createConfetti() {
       for (let i = 0; i < 50; i++) {
         setTimeout(() => {
@@ -2377,7 +2364,6 @@
       }
     }
 
-    // Completar tarea
     window.completeBubble = function (btn) {
       const bubble = btn.parentElement;
       const user = auth.currentUser;
@@ -2471,7 +2457,6 @@
       });
     }
 
-    // Ver detalles de tarea
     window.viewTaskDetail = function (taskId) {
       const task = tasks.find(t => t.id === taskId);
       if (!task) return;
@@ -2603,7 +2588,6 @@
       loadHistory(filter);
     }
 
-    // Dashboard
     window.openDashboard = function () {
       document.getElementById('dashboardModal').style.display = 'block';
       loadDashboard();
@@ -2689,7 +2673,6 @@
     `;
     }
 
-    // Búsqueda
     window.openSearch = function () {
       document.getElementById('searchModal').style.display = 'block';
     }
@@ -2782,7 +2765,6 @@
       document.getElementById('searchResults').innerHTML = '<p style="text-align: center; color: var(--text-light); padding: 20px;">Ingresa criterios de búsqueda</p>';
     }
 
-    // Función para toggle del menú desplegable
     window.toggleDropdown = function () {
       const dropdownContent = document.querySelector('.dropdown-content');
       dropdownContent.classList.toggle('show');
@@ -2837,13 +2819,11 @@
       updateTimeStates();
     }
 
-    // Toggle para mostrar/ocultar el panel de controles
     window.toggleControlsPanel = function () {
       const panel = document.getElementById('controlsPanel');
       panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
     }
 
-    // Event listeners para cerrar modales
     document.querySelectorAll('.modal').forEach(modal => {
       modal.addEventListener('click', function (e) {
         if (e.target === this) {
@@ -2852,9 +2832,6 @@
       });
     });
 
-    // ========================================
-    // SISTEMA DE PERFILES DE USUARIO
-    // ========================================
 
     window.openProfile = function () {
       const modal = document.getElementById('profileModal');
@@ -2994,9 +2971,7 @@
       return '';
     }
 
-    // ========================================
-    // SISTEMA DE CHAT
-    // ========================================
+ 
 
     window.toggleChat = function () {
       const chatContainer = document.getElementById('chatContainer');
